@@ -1,11 +1,32 @@
 package com.nnk.springboot.domain;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
-//@Entity
+import java.sql.Timestamp;
+
+@Entity
 @Table(name = "curvepoint")
+@Setter
+@Getter
 public class CurvePoint {
-    // TODO: Map columns in data table CURVEPOINT with corresponding java fields
+
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    private Integer id;
+    @NotNull(message = "Curve Id is mandatory")
+    private Integer curveId;
+    private Timestamp asOfDate;
+    @NotNull(message = "Term is mandatory")
+    private Double term;
+    @NotNull(message = "Value is mandatory")
+    private Double value;
+    @NotNull(message = "Creation Date is mandatory")
+    private Timestamp creationDate;
+
 }

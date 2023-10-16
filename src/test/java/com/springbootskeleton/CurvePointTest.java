@@ -66,7 +66,7 @@ public class CurvePointTest {
     @Test
     public void deleteCurvePointShouldCallTheCurvePointRepositoryDeleteMethodTest() {
 
-        curvePoint = new CurvePoint(1, 1, null, 1.1, 2.2, creationDate);
+        curvePoint = new CurvePoint();
 
         curvePointServiceTest.deleteCurvePoint(curvePoint);
 

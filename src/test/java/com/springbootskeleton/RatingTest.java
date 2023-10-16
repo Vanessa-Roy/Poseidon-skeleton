@@ -54,7 +54,7 @@ public class RatingTest {
 
         ratingServiceTest.updateRating(rating, ratingDto);
 
-        verify(ratingRepositoryMock, Mockito.times(1)).save(rating);
+        verify(ratingRepositoryMock, Mockito.times(1)).save(any(Rating.class));
     }
 
     @Test

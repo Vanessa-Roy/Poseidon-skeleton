@@ -40,7 +40,7 @@ public class TradeService {
 
     public void saveTrade(TradeDto tradeDto) {
         Trade trade = objectMapper.convertValue(tradeDto, Trade.class);
-        trade.setTradeDate(Timestamp.from(Instant.now()));
+        trade.setCreationDate(Timestamp.from(Instant.now()));
         tradeRepository.save(trade);
     }
 

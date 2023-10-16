@@ -32,13 +32,13 @@ public class Trade {
     private Double buyPrice;
     private Double sellPrice;
     private String benchmark;
-    @NotNull(message = "Trade Date is mandatory")
     private Timestamp tradeDate;
     private String security;
     private String status;
     private String trader;
     private String book;
     private String creationName;
+    @NotNull(message = "Creation Date is mandatory")
     private Timestamp creationDate;
     private String revisionName;
     private Timestamp revisionDate;

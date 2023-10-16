@@ -43,10 +43,7 @@ public class RatingService {
     }
 
     public void updateRating(Rating ratingToUpdate, RatingDto ratingDto) {
-        ratingToUpdate.setMoodysRating(ratingDto.getMoodysRating());
-        ratingToUpdate.setSandPRating(ratingDto.getSandPRating());
-        ratingToUpdate.setFitchRating(ratingDto.getFitchRating());
-        ratingToUpdate.setOrderNumber(ratingDto.getOrderNumber());
+        ratingToUpdate = objectMapper.convertValue(ratingDto, Rating.class);
         ratingRepository.save(ratingToUpdate);
     }
 

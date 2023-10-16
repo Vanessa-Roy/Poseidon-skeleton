@@ -1,5 +1,6 @@
 package com.nnk.springboot.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,11 +13,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class RatingDto {
     private Integer id;
-    @NotNull (message = "must not be null")
+    @NotBlank (message = "must not be null")
     private String moodysRating;
-    @NotNull (message = "must not be null")
+    @NotBlank(message = "must not be null")
     private String sandPRating;
-    @NotNull (message = "must not be null")
+    @NotBlank (message = "must not be null")
     private String fitchRating;
     @NotNull (message = "must not be null")
     private Integer orderNumber;

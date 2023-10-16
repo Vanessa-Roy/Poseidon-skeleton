@@ -1,6 +1,7 @@
 package com.nnk.springboot.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,11 +21,11 @@ public class Rating {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Integer id;
-    @NotNull(message = "Moodys Rating is mandatory")
+    @NotBlank(message = "Moodys Rating is mandatory")
     private String moodysRating;
-    @NotNull(message = "Sand Rating is mandatory")
+    @NotBlank(message = "Sand Rating is mandatory")
     private String sandPRating;
-    @NotNull(message = "Fitch Rating is mandatory")
+    @NotBlank(message = "Fitch Rating is mandatory")
     private String fitchRating;
     @NotNull(message = "Order Number is mandatory")
     private Integer orderNumber;

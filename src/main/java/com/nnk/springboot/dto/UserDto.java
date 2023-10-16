@@ -1,6 +1,5 @@
-package com.nnk.springboot.domain;
+package com.nnk.springboot.dto;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -8,23 +7,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
-@Table(name = "users")
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+public class UserDto {
     private Integer id;
-    @NotBlank
+    @NotBlank(message = "Full Name is mandatory")
     private String fullname;
-    @NotBlank
-    @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$")
-    private String password;
-    @NotBlank
+    @NotBlank(message = "User Name is mandatory")
     private String username;
-    @NotBlank
+    @NotBlank(message = "Role is mandatory")
     private String role;
 }

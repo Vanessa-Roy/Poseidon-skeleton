@@ -12,17 +12,17 @@ import lombok.Setter;
 @NoArgsConstructor
 public class RuleNameDto {
     private Integer id;
-    @NotBlank(message = "must not be null")
+    @NotBlank(message = "Name is mandatory")
     private String name;
-    @NotBlank(message = "must not be null")
+    @NotBlank(message = "Description is mandatory")
     private String description;
-    @NotBlank(message = "must not be null")
+    @NotBlank(message = "Json is mandatory")
     private String json;
-    @NotBlank(message = "must not be null")
+    @NotBlank(message = "Template is mandatory")
     private String template;
-    @NotBlank(message = "must not be null")
+    @NotBlank(message = "Sql Str is mandatory")
     private String sqlStr;
-    @NotBlank(message = "must not be null")
+    @NotBlank(message = "Sql Part is mandatory")
     private String sqlPart;
 
 }

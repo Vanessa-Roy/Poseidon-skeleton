@@ -50,7 +50,7 @@ public class CurveController {
     }
 
     @PostMapping("/curvePoint/update/{id}")
-    public String updateCurvePoint(@PathVariable("id") Integer id, @Valid CurvePointDto curvePoint, BindingResult result, Model model) {
+    public String updateCurvePoint(@PathVariable("id") Integer id, @ModelAttribute("curvePoint") @Valid CurvePointDto curvePoint, BindingResult result, Model model) {
         if (result.hasErrors()) {
             return "curvePoint/update";
         }

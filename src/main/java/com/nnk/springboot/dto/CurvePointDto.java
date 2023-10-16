@@ -14,11 +14,11 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class CurvePointDto {
     private Integer id;
-    @NotNull (message = "must not be null")
+    @NotNull (message = "Curve Id is mandatory")
     private Integer curveId;
-    @NotNull (message = "must not be null")
+    @NotNull (message = "Term is mandatory")
     private Double term;
-    @NotNull (message = "must not be null")
+    @NotNull (message = "Value is mandatory")
     private Double value;
 
 }

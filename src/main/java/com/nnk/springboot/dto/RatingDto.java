@@ -13,13 +13,13 @@ import lombok.Setter;
 @NoArgsConstructor
 public class RatingDto {
     private Integer id;
-    @NotBlank (message = "must not be null")
+    @NotBlank (message = "Moodys Rating is mandatory")
     private String moodysRating;
-    @NotBlank(message = "must not be null")
+    @NotBlank(message = "Sand Rating is mandatory")
     private String sandPRating;
-    @NotBlank (message = "must not be null")
+    @NotBlank (message = "Fitch Rating is mandatory")
     private String fitchRating;
-    @NotNull (message = "must not be null")
+    @NotNull (message = "Order Number is mandatory")
     private Integer orderNumber;
 
 }

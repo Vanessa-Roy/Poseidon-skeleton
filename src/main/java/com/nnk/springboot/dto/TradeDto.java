@@ -13,11 +13,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class TradeDto {
     private Integer id;
-    @NotBlank(message = "must not be null")
+    @NotBlank(message = "Account is mandatory")
     private String account;
-    @NotBlank(message = "must not be null")
+    @NotBlank(message = "Type is mandatory")
     private String type;
-    @NotNull(message = "must not be null")
+    @NotNull(message = "Buy Quantity is mandatory")
     private Double buyQuantity;
 
 }

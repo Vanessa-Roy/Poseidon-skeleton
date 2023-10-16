@@ -23,12 +23,12 @@ public class CurvePoint {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Integer id;
-    @NotNull(message = "Curve Id is mandatory")
+    @NotNull
     private Integer curveId;
     private Timestamp asOfDate;
-    @NotNull(message = "Term is mandatory")
+    @NotNull
     private Double term;
-    @NotNull(message = "Value is mandatory")
+    @NotNull
     private Double value;
     @NotNull(message = "Creation Date is mandatory")
     private Timestamp creationDate;

@@ -13,11 +13,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class BidListDto {
     private Integer id;
-    @NotBlank(message = "must not be null")
+    @NotBlank(message = "Account is mandatory")
     private String account;
-    @NotBlank(message = "must not be null")
+    @NotBlank(message = "Type is mandatory")
     private String type;
-    @NotNull(message = "must not be null")
+    @NotNull(message = "Bid Quantity is mandatory")
     private Double bidQuantity;
 
 }

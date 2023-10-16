@@ -19,16 +19,16 @@ public class RuleName {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Integer id;
-    @NotBlank(message = "Name is mandatory")
+    @NotBlank
     private String name;
-    @NotBlank(message = "Description is mandatory")
+    @NotBlank
     private String description;
-    @NotBlank(message = "Json is mandatory")
+    @NotBlank
     private String json;
-    @NotBlank(message = "Template is mandatory")
+    @NotBlank
     private String template;
-    @NotBlank(message = "Sql Str is mandatory")
+    @NotBlank
     private String sqlStr;
-    @NotBlank(message = "Sql Part is mandatory")
+    @NotBlank
     private String sqlPart;
 }

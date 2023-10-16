@@ -46,4 +46,12 @@ public class BidList {
     private String dealType;
     private String sourceListId;
     private String side;
+
+    public BidList(int id, String account, String type, double bidQuantity, @NotNull Timestamp creationDate) {
+        this.id = id;
+        this.account = account;
+        this.type = type;
+        this.bidQuantity = bidQuantity;
+        this.creationDate = creationDate;
+    }
 }

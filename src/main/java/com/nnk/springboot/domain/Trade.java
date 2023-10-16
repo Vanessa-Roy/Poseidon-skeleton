@@ -46,4 +46,12 @@ public class Trade {
     private String dealType;
     private String sourceListId;
     private String side;
+
+    public Trade(int id, String account, String type, double buyQuantity, @NotNull Timestamp tradeDate) {
+        this.id = id;
+        this.account = account;
+        this.type = type;
+        this.buyQuantity = buyQuantity;
+        this.tradeDate = tradeDate;
+    }
 }

@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 
@@ -38,20 +40,14 @@ public class Trade {
     private String trader;
     private String book;
     private String creationName;
-    @NotNull(message = "Creation Date is mandatory")
+    @CreationTimestamp
+    @Column(updatable=false)
     private Timestamp creationDate;
     private String revisionName;
+    @UpdateTimestamp
     private Timestamp revisionDate;
     private String dealName;
     private String dealType;
     private String sourceListId;
     private String side;
-
-    public Trade(int id, String account, String type, double buyQuantity, @NotNull Timestamp creationDate) {
-        this.id = id;
-        this.account = account;
-        this.type = type;
-        this.buyQuantity = buyQuantity;
-        this.creationDate = creationDate;
-    }
 }

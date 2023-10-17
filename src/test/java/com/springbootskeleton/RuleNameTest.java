@@ -1,9 +1,6 @@
 package com.springbootskeleton;
 
-import com.nnk.springboot.domain.CurvePoint;
 import com.nnk.springboot.domain.RuleName;
-import com.nnk.springboot.dto.CurvePointDto;
-import com.nnk.springboot.dto.RuleNameDto;
 import com.nnk.springboot.repositories.RuleNameRepository;
 import com.nnk.springboot.service.RuleNameService;
 import org.junit.jupiter.api.Test;
@@ -13,13 +10,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,45 +27,22 @@ public class RuleNameTest {
     @Mock
     RuleNameRepository ruleNameRepositoryMock;
 
-    private RuleNameDto ruleNameDto = new RuleNameDto();
-
-    private RuleName ruleName = new RuleName();
+    private final RuleName ruleName = new RuleName();
 
     @Test
-    public void saveRuleNameDoesNotExistShouldCallTheRuleNameRepositorySaveMethodTest() {
+    public void createRuleNameDoesNotExistShouldCallTheRuleNameRepositorySaveMethodTest() {
 
-        ruleNameServiceTest.saveRuleName(ruleNameDto);
+        ruleNameServiceTest.createRuleName(ruleName);
 
-        verify(ruleNameRepositoryMock, Mockito.times(1)).save(any(RuleName.class));
+        verify(ruleNameRepositoryMock, Mockito.times(1)).save(ruleName);
     }
 
     @Test
     public void updateRuleNameShouldCallTheRuleNameRepositorySaveMethodTest() {
 
-        ruleName = new RuleName(
-                1,
-                "name",
-                "description",
-                "json",
-                "template",
-                "sqlStr",
-                "sqlPart"
-        );
+        ruleNameServiceTest.updateRuleName(ruleName);
 
-        ruleNameDto = new RuleNameDto(
-                1,
-                "name2",
-                "description2",
-                "json2",
-                "template2",
-                "sqlStr2",
-                "sqlPart2"
-        );
-
-
-        ruleNameServiceTest.updateRuleName(ruleName, ruleNameDto);
-
-        verify(ruleNameRepositoryMock, Mockito.times(1)).save(any(RuleName.class));
+        verify(ruleNameRepositoryMock, Mockito.times(1)).save(ruleName);
     }
 
     @Test
@@ -82,89 +54,27 @@ public class RuleNameTest {
     }
 
     @Test
-    public void loadRuleNameDtoListShouldReturnAllTheRuleNamesDtoTest() {
+    public void loadRuleNameListShouldCallTheRuleNameRepositoryFindAllMethodTest() {
 
-        List<RuleName> ruleNameList = new ArrayList<>(List.of(
-                new RuleName(
-                        1,
-                        "name",
-                        "description",
-                        "json",
-                        "template",
-                        "sqlStr",
-                        "sqlPart"
-                )
-        ));
-
-        when(ruleNameRepositoryMock.findAll()).thenReturn(ruleNameList);
-
-        List<RuleNameDto> ruleNameDtoList = ruleNameServiceTest.loadRuleNameDtoList();
+        ruleNameServiceTest.loadRuleNameList();
 
         verify(ruleNameRepositoryMock, Mockito.times(1)).findAll();
-        assertEquals(ruleNameList.get(0).getId(), ruleNameDtoList.get(0).getId());
-        assertEquals(ruleNameList.get(0).getName(), ruleNameDtoList.get(0).getName());
-        assertEquals(ruleNameList.get(0).getDescription(), ruleNameDtoList.get(0).getDescription());
-        assertEquals(ruleNameList.get(0).getJson(), ruleNameDtoList.get(0).getJson());
-        assertEquals(ruleNameList.get(0).getTemplate(), ruleNameDtoList.get(0).getTemplate());
-        assertEquals(ruleNameList.get(0).getSqlStr(), ruleNameDtoList.get(0).getSqlStr());
-        assertEquals(ruleNameList.get(0).getSqlPart(), ruleNameDtoList.get(0).getSqlPart());
     }
 
     @Test
-    public void loadRuleNameDtoByIdShouldReturnARuleNameDtoTest() {
+    public void loadRuleNameByIdShouldCallTheRuleNameRepositoryFindByIdMethodTest() {
 
-        RuleName ruleName = new RuleName(
-                1,
-                "name",
-                "description",
-                "json",
-                "template",
-                "sqlStr",
-                "sqlPart"
-        );
+        when(ruleNameRepositoryMock.findById(anyInt())).thenReturn(Optional.of(ruleName));
 
-        when(ruleNameRepositoryMock.findById(ruleName.getId())).thenReturn(Optional.of(ruleName));
+        ruleNameServiceTest.loadRuleNameById(anyInt());
 
-        RuleNameDto ruleNameDto = ruleNameServiceTest.loadRuleNameDtoById(ruleName.getId());
-
-        verify(ruleNameRepositoryMock, Mockito.times(1)).findById(ruleName.getId());
-        assertEquals(ruleName.getId(), ruleNameDto.getId());
-        assertEquals(ruleName.getName(), ruleNameDto.getName());
-        assertEquals(ruleName.getDescription(), ruleNameDto.getDescription());
-        assertEquals(ruleName.getJson(), ruleNameDto.getJson());
-        assertEquals(ruleName.getTemplate(), ruleNameDto.getTemplate());
-        assertEquals(ruleName.getSqlStr(), ruleNameDto.getSqlStr());
-        assertEquals(ruleName.getSqlPart(), ruleNameDto.getSqlPart());
+        verify(ruleNameRepositoryMock, Mockito.times(1)).findById(anyInt());
     }
 
     @Test
-    public void loadRuleNameDtoByIdWithUnknownIdShouldThrowAnExceptionTest() {
+    public void loadRuleNameByIdWithUnknownIdShouldThrowAnExceptionTest() {
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> ruleNameServiceTest.loadRuleNameDtoById(2));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> ruleNameServiceTest.loadRuleNameById(2));
         assertEquals("Invalid RuleName Id:" + 2, exception.getMessage());
-    }
-
-    @Test
-    public void mapToRuleNameDTOShouldReturnARuleNameDtoFromARuleNameEntityTest() {
-
-        RuleName ruleName = new RuleName(
-                1,
-                "name",
-                "description",
-                "json",
-                "template",
-                "sqlStr",
-                "sqlPart"
-        );
-
-        RuleNameDto ruleNameDto = ruleNameServiceTest.mapToRuleNameDTO(ruleName);
-
-        assertEquals(ruleName.getId(), ruleNameDto.getId());
-        assertEquals(ruleName.getName(), ruleNameDto.getName());
-        assertEquals(ruleName.getDescription(), ruleNameDto.getDescription());
-        assertEquals(ruleName.getJson(), ruleNameDto.getJson());
-        assertEquals(ruleName.getTemplate(), ruleNameDto.getTemplate());
-        assertEquals(ruleName.getSqlStr(), ruleNameDto.getSqlStr());
-        assertEquals(ruleName.getSqlPart(), ruleNameDto.getSqlPart());
     }
 }

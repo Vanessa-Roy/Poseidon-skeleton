@@ -1,8 +1,8 @@
 package com.nnk.springboot.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nnk.springboot.domain.Trade;
 import com.nnk.springboot.dto.TradeDto;
-import com.nnk.springboot.repositories.TradeRepository;
 import com.nnk.springboot.service.TradeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +16,12 @@ public class TradeController {
     @Autowired
     private TradeService tradeService;
 
-    @Autowired
-    private TradeRepository tradeRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @RequestMapping("/trade/list")
     public String home(Model model)
     {
-        model.addAttribute("trades", tradeService.loadTradeDtoList());
+        model.addAttribute("trades", TradeDto.mapFromTrades(tradeService.loadTradeList()));
         return "trade/list";
     }
 
@@ -35,8 +34,9 @@ public class TradeController {
     @PostMapping("/trade/validate")
     public String validate(@Valid @ModelAttribute("trade") TradeDto tradeDto, BindingResult result, Model model) {
         if (!result.hasErrors()) {
-            tradeService.saveTrade(tradeDto);
-            model.addAttribute("trades", tradeService.loadTradeDtoList());
+            Trade tradeToCreate = objectMapper.convertValue(tradeDto, Trade.class);
+            tradeService.createTrade(tradeToCreate);
+            model.addAttribute("trades", TradeDto.mapFromTrades(tradeService.loadTradeList()));
             return "redirect:/trade/list";
         }
         return "trade/add";
@@ -44,27 +44,26 @@ public class TradeController {
 
     @GetMapping("/trade/update/{id}")
     public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
-        TradeDto tradeDto = tradeService.loadTradeDtoById(id);
-        model.addAttribute("trade", tradeDto);
+        model.addAttribute("trade", TradeDto.mapFromTrade(tradeService.loadTradeById(id)));
         return "trade/update";
     }
 
     @PostMapping("/trade/update/{id}")
-    public String updateTrade(@PathVariable("id") Integer id, @Valid @ModelAttribute("trade") TradeDto trade, BindingResult result, Model model) {
+    public String updateTrade(@PathVariable("id") Integer id, @Valid @ModelAttribute("trade") TradeDto tradeDto, BindingResult result, Model model) {
         if (result.hasErrors()) {
             return "trade/update";
         }
-        Trade tradeToUpdate = tradeRepository.findById(id).orElseThrow( () -> new IllegalArgumentException("Invalid Curve Point Id:" + id));
-        tradeService.updateTrade(tradeToUpdate, trade);
-        model.addAttribute("trades", tradeService.loadTradeDtoList());
+        tradeService.loadTradeById(id); //to check if the trade exists
+        Trade tradeToUpdate = objectMapper.convertValue(tradeDto, Trade.class);
+        tradeService.updateTrade(tradeToUpdate);
+        model.addAttribute("trade", TradeDto.mapFromTrade(tradeService.loadTradeById(id)));
         return "redirect:/trade/list";
     }
 
     @GetMapping("/trade/delete/{id}")
     public String deleteTrade(@PathVariable("id") Integer id, Model model) {
-        Trade tradeToDelete = tradeRepository.findById(id).orElseThrow( () -> new IllegalArgumentException("Invalid Curve Point Id:" + id));
-        tradeService.deleteTrade(tradeToDelete);
-        model.addAttribute("trades", tradeService.loadTradeDtoList());
+        tradeService.deleteTrade(tradeService.loadTradeById(id));
+        model.addAttribute("trades", TradeDto.mapFromTrades(tradeService.loadTradeList()));
         return "redirect:/trade/list";
     }
 }

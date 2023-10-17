@@ -1,5 +1,6 @@
 package com.nnk.springboot.domain;
 
+import com.nnk.springboot.domain.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -28,8 +29,4 @@ public class User {
     private String username;
     @NotNull
     private Role role;
-
-    public enum Role {
-        ADMIN, USER
-    }
 }

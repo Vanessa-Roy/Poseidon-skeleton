@@ -3,7 +3,6 @@ package com.springbootskeleton;
 import com.nnk.springboot.domain.BidList;
 import com.nnk.springboot.domain.BidList;
 import com.nnk.springboot.dto.BidListDto;
-import com.nnk.springboot.dto.BidListDto;
 import com.nnk.springboot.repositories.BidListRepository;
 import com.nnk.springboot.service.BidListService;
 import org.junit.jupiter.api.Test;
@@ -22,6 +21,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,31 +34,20 @@ public class BidListTest {
     @Mock
     BidListRepository bidListRepositoryMock;
 
-    private BidListDto bidListDto;
-
-    private BidList bidList;
-
-
-    private final Timestamp creationDate = Timestamp.from(Instant.now());
+    private final BidList bidList = new BidList();
 
     @Test
-    public void saveBidListDoesNotExistShouldCallTheBidListRepositorySaveMethodTest() {
+    public void createBidListDoesNotExistShouldCallTheBidListRepositorySaveMethodTest() {
 
-        bidListDto = new BidListDto(null, "account", "type", 1.0);
+        bidListServiceTest.createBidList(bidList);
 
-        bidListServiceTest.saveBidList(bidListDto);
-
-        verify(bidListRepositoryMock, Mockito.times(1)).save(any(BidList.class));
+        verify(bidListRepositoryMock, Mockito.times(1)).save(bidList);
     }
 
     @Test
     public void updateBidListShouldCallTheBidListRepositorySaveMethodTest() {
 
-        bidList = new BidList(1, "account", "type", 1.0, creationDate);
-
-        bidListDto = new BidListDto(1, "account", "type", 3.3);
-
-        bidListServiceTest.updateBidList(bidList, bidListDto);
+        bidListServiceTest.updateBidList(bidList);
 
         verify(bidListRepositoryMock, Mockito.times(1)).save(bidList);
     }
@@ -66,62 +55,33 @@ public class BidListTest {
     @Test
     public void deleteBidListShouldCallTheBidListRepositoryDeleteMethodTest() {
 
-        bidList = new BidList();
-
         bidListServiceTest.deleteBidList(bidList);
 
         verify(bidListRepositoryMock, Mockito.times(1)).delete(bidList);
     }
 
     @Test
-    public void loadBidListDtoListShouldReturnAllTheBidListsDtoTest() {
+    public void loadBidListListShouldCallTheBidListRepositoryFindAllMethodTest() {
 
-        List<BidList> bidListList = new ArrayList<>(List.of(new BidList(1, "account", "type", 1.0, creationDate)));
-
-        when(bidListRepositoryMock.findAll()).thenReturn(bidListList);
-
-        List<BidListDto> bidListDtoList = bidListServiceTest.loadBidListDtoList();
+        bidListServiceTest.loadBidListList();
 
         verify(bidListRepositoryMock, Mockito.times(1)).findAll();
-        assertEquals(bidListList.get(0).getId(), bidListDtoList.get(0).getId());
-        assertEquals(bidListList.get(0).getAccount(), bidListDtoList.get(0).getAccount());
-        assertEquals(bidListList.get(0).getType(), bidListDtoList.get(0).getType());
-        assertEquals(bidListList.get(0).getBidQuantity(), bidListDtoList.get(0).getBidQuantity());
     }
 
     @Test
-    public void loadBidListDtoByIdShouldReturnABidListDtoTest() {
+    public void loadBidListByIdShouldCallTheBidListRepositoryFindByIdMethodTest() {
 
-        BidList bidList = new BidList(1, "account", "type", 1.0, creationDate);
+        when(bidListRepositoryMock.findById(anyInt())).thenReturn(Optional.of(bidList));
 
-        when(bidListRepositoryMock.findById(bidList.getId())).thenReturn(Optional.of(bidList));
+        bidListServiceTest.loadBidListById(anyInt());
 
-        BidListDto bidListDto = bidListServiceTest.loadBidListDtoById(bidList.getId());
-
-        verify(bidListRepositoryMock, Mockito.times(1)).findById(bidList.getId());
-        assertEquals(bidList.getId(), bidListDto.getId());
-        assertEquals(bidList.getAccount(), bidListDto.getAccount());
-        assertEquals(bidList.getType(), bidListDto.getType());
-        assertEquals(bidList.getBidQuantity(), bidListDto.getBidQuantity());
+        verify(bidListRepositoryMock, Mockito.times(1)).findById(anyInt());
     }
 
     @Test
-    public void loadBidListDtoByIdWithUnknownIdShouldThrowAnExceptionTest() {
+    public void loadBidListByIdWithUnknownIdShouldThrowAnExceptionTest() {
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> bidListServiceTest.loadBidListDtoById(2));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> bidListServiceTest.loadBidListById(2));
         assertEquals("Invalid BidList Id:" + 2, exception.getMessage());
-    }
-
-    @Test
-    public void mapToBidListDTOShouldReturnABidListDtoFromABidListEntityTest() {
-
-        bidList = new BidList(1, "account", "type", 1.0, creationDate);
-
-        BidListDto bidListDto = bidListServiceTest.mapToBidListDTO(bidList);
-
-        assertEquals(bidList.getId(), bidListDto.getId());
-        assertEquals(bidList.getAccount(), bidListDto.getAccount());
-        assertEquals(bidList.getType(), bidListDto.getType());
-        assertEquals(bidList.getBidQuantity(), bidListDto.getBidQuantity());
     }
 }

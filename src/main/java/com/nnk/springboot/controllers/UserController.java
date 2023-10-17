@@ -4,11 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nnk.springboot.domain.User;
 import com.nnk.springboot.dto.SaveUserDto;
 import com.nnk.springboot.dto.UserDto;
-import com.nnk.springboot.repositories.UserRepository;
 import com.nnk.springboot.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,8 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class UserController {
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private UserService userService;
@@ -50,7 +46,7 @@ public class UserController {
 
     @GetMapping("/user/update/{id}")
     public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
-        model.addAttribute("user", SaveUserDto.mapToSaveUserDTO(userService.loadUserById(id)));
+        model.addAttribute("user", SaveUserDto.mapFromUser(userService.loadUserById(id)));
         return "user/update";
     }
 
@@ -69,8 +65,7 @@ public class UserController {
 
     @GetMapping("/user/delete/{id}")
     public String deleteUser(@PathVariable("id") Integer id, Model model) {
-        User userToDelete = userRepository.findById(id).orElseThrow( () -> new IllegalArgumentException("Invalid User Id:" + id));
-        userService.deleteUser(userToDelete);
+        userService.deleteUser(userService.loadUserById(id));
         model.addAttribute("users", UserDto.mapFromUsers(userService.loadUserList()));
         return "redirect:/user/list";
     }

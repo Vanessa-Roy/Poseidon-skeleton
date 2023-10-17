@@ -1,11 +1,15 @@
 package com.nnk.springboot.dto;
 
+import com.nnk.springboot.domain.Trade;
+import com.nnk.springboot.domain.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Setter
 @Getter
@@ -19,6 +23,14 @@ public class TradeDto {
     private String type;
     @NotNull(message = "Buy Quantity is mandatory")
     private Double buyQuantity;
+
+    public static TradeDto mapFromTrade(Trade trade) {
+        return new TradeDto(trade.getId(),trade.getAccount(),trade.getType(),trade.getBuyQuantity());
+    }
+
+    public static List<TradeDto> mapFromTrades(List<Trade> trades) {
+        return trades.stream().map(TradeDto::mapFromTrade).toList();
+    }
 
 }
 

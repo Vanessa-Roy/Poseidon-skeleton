@@ -1,8 +1,10 @@
 package com.nnk.springboot.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nnk.springboot.domain.RuleName;
+import com.nnk.springboot.domain.Trade;
 import com.nnk.springboot.dto.RuleNameDto;
-import com.nnk.springboot.repositories.RuleNameRepository;
+import com.nnk.springboot.dto.TradeDto;
 import com.nnk.springboot.service.RuleNameService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +18,12 @@ public class RuleNameController {
     @Autowired
     private RuleNameService ruleNameService;
 
-    @Autowired
-    private RuleNameRepository ruleNameRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @RequestMapping("/ruleName/list")
     public String home(Model model)
     {
-        model.addAttribute("ruleNames", ruleNameService.loadRuleNameDtoList());
+        model.addAttribute("ruleNames", RuleNameDto.mapFromRuleNames(ruleNameService.loadRuleNameList()));
         return "ruleName/list";
     }
 
@@ -35,8 +36,9 @@ public class RuleNameController {
     @PostMapping("/ruleName/validate")
     public String validate(@Valid @ModelAttribute("ruleName") RuleNameDto ruleNameDto, BindingResult result, Model model) {
         if (!result.hasErrors()) {
-            ruleNameService.saveRuleName(ruleNameDto);
-            model.addAttribute("ruleNames", ruleNameService.loadRuleNameDtoList());
+            RuleName ruleNameToCreate = objectMapper.convertValue(ruleNameDto, RuleName.class);
+            ruleNameService.createRuleName(ruleNameToCreate);
+            model.addAttribute("ruleNames", RuleNameDto.mapFromRuleNames(ruleNameService.loadRuleNameList()));
             return "redirect:/ruleName/list";
         }
         return "ruleName/add";
@@ -44,8 +46,7 @@ public class RuleNameController {
 
     @GetMapping("/ruleName/update/{id}")
     public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
-        RuleNameDto ruleNameDto = ruleNameService.loadRuleNameDtoById(id);
-        model.addAttribute("ruleName", ruleNameDto);
+        model.addAttribute("ruleName", RuleNameDto.mapFromRuleName(ruleNameService.loadRuleNameById(id)));
         return "ruleName/update";
     }
 
@@ -55,17 +56,17 @@ public class RuleNameController {
         if (result.hasErrors()) {
             return "ruleName/update";
         }
-        RuleName ruleNameToUpdate = ruleNameRepository.findById(id).orElseThrow( () -> new IllegalArgumentException("Invalid RuleName Id:" + id));
-        ruleNameService.updateRuleName(ruleNameToUpdate, ruleName);
-        model.addAttribute("ruleNames", ruleNameService.loadRuleNameDtoList());
+        ruleNameService.loadRuleNameById(id); //to check if the ruleName exists
+        RuleName ruleNameToUpdate = objectMapper.convertValue(ruleName, RuleName.class);
+        ruleNameService.updateRuleName(ruleNameToUpdate);
+        model.addAttribute("ruleNames", RuleNameDto.mapFromRuleNames(ruleNameService.loadRuleNameList()));
         return "redirect:/ruleName/list";
     }
 
     @GetMapping("/ruleName/delete/{id}")
     public String deleteRuleName(@PathVariable("id") Integer id, Model model) {
-        RuleName ruleNameToDelete = ruleNameRepository.findById(id).orElseThrow( () -> new IllegalArgumentException("Invalid RuleName Id:" + id));
-        ruleNameService.deleteRuleName(ruleNameToDelete);
-        model.addAttribute("ruleNames", ruleNameService.loadRuleNameDtoList());
+        ruleNameService.deleteRuleName(ruleNameService.loadRuleNameById(id));
+        model.addAttribute("ruleNames", RuleNameDto.mapFromRuleNames(ruleNameService.loadRuleNameList()));
         return "redirect:/ruleName/list";
     }
 }

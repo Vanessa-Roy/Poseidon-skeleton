@@ -1,11 +1,15 @@
 package com.nnk.springboot.dto;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nnk.springboot.domain.BidList;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Setter
 @Getter
@@ -19,6 +23,16 @@ public class BidListDto {
     private String type;
     @NotNull(message = "Bid Quantity is mandatory")
     private Double bidQuantity;
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    public static BidListDto mapFromBidList(BidList bidList) {
+        return new BidListDto(bidList.getId(),bidList.getAccount(),bidList.getType(),bidList.getBidQuantity());
+    }
+
+    public static List<BidListDto> mapFromBidLists(List<BidList> bidLists) {
+        return bidLists.stream().map(BidListDto::mapFromBidList).toList();
+    }
 
 }
 

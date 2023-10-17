@@ -1,5 +1,6 @@
 package com.nnk.springboot.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nnk.springboot.domain.CurvePoint;
 import com.nnk.springboot.dto.CurvePointDto;
 import com.nnk.springboot.repositories.CurvePointRepository;
@@ -16,13 +17,12 @@ public class CurveController {
     @Autowired
     private CurvePointService curvePointService;
 
-    @Autowired
-    private CurvePointRepository curvePointRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @RequestMapping("/curvePoint/list")
     public String home(Model model)
     {
-        model.addAttribute("curvePoints", curvePointService.loadCurvePointDtoList());
+        model.addAttribute("curvePoints", CurvePointDto.mapFromCurvePoints(curvePointService.loadCurvePointList()));
         return "curvePoint/list";
     }
 
@@ -35,8 +35,9 @@ public class CurveController {
     @PostMapping("/curvePoint/validate")
     public String validate(@Valid @ModelAttribute("curvePoint") CurvePointDto curvePointDto, BindingResult result, Model model) {
         if (!result.hasErrors()) {
-            curvePointService.saveCurvePoint(curvePointDto);
-            model.addAttribute("curvePoints", curvePointService.loadCurvePointDtoList());
+            CurvePoint curvePointToCreate = objectMapper.convertValue(curvePointDto, CurvePoint.class);
+            curvePointService.createCurvePoint(curvePointToCreate);
+            model.addAttribute("curvePoints", CurvePointDto.mapFromCurvePoints(curvePointService.loadCurvePointList()));
             return "redirect:/curvePoint/list";
         }
         return "curvePoint/add";
@@ -44,8 +45,7 @@ public class CurveController {
 
     @GetMapping("/curvePoint/update/{id}")
     public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
-        CurvePointDto curvePointDto = curvePointService.loadCurvePointDtoById(id);
-        model.addAttribute("curvePoint", curvePointDto);
+        model.addAttribute("curvePoint", CurvePointDto.mapFromCurvePoint(curvePointService.loadCurvePointById(id)));
         return "curvePoint/update";
     }
 
@@ -54,17 +54,17 @@ public class CurveController {
         if (result.hasErrors()) {
             return "curvePoint/update";
         }
-        CurvePoint curvePointToUpdate = curvePointRepository.findById(id).orElseThrow( () -> new IllegalArgumentException("Invalid Curve Point Id:" + id));
-        curvePointService.updateCurvePoint(curvePointToUpdate, curvePoint);
-        model.addAttribute("curvePoints", curvePointService.loadCurvePointDtoList());
+        curvePointService.loadCurvePointById(id); //to check if the curvePoint exists
+        CurvePoint curvePointToUpdate = objectMapper.convertValue(curvePoint, CurvePoint.class);
+        curvePointService.updateCurvePoint(curvePointToUpdate);
+        model.addAttribute("curvePoints", CurvePointDto.mapFromCurvePoints(curvePointService.loadCurvePointList()));
         return "redirect:/curvePoint/list";
     }
 
     @GetMapping("/curvePoint/delete/{id}")
     public String deleteCurvePoint(@PathVariable("id") Integer id, Model model) {
-        CurvePoint curvePointToDelete = curvePointRepository.findById(id).orElseThrow( () -> new IllegalArgumentException("Invalid Curve Point Id:" + id));
-        curvePointService.deleteCurvePoint(curvePointToDelete);
-        model.addAttribute("curvePoints", curvePointService.loadCurvePointDtoList());
+        curvePointService.deleteCurvePoint(curvePointService.loadCurvePointById(id));
+        model.addAttribute("curvePoints", CurvePointDto.mapFromCurvePoints(curvePointService.loadCurvePointList()));
         return "redirect:/curvePoint/list";
     }
 }

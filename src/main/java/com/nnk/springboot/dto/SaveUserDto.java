@@ -1,6 +1,7 @@
 package com.nnk.springboot.dto;
 
 import com.nnk.springboot.domain.User;
+import com.nnk.springboot.domain.enums.Role;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -25,9 +26,9 @@ public class SaveUserDto {
     @NotBlank(message = "Username is mandatory")
     private String username;
     @NotNull(message = "Role is mandatory")
-    private User.Role role;
+    private Role role;
 
-    public static SaveUserDto mapToSaveUserDTO(User user) {
+    public static SaveUserDto mapFromUser(User user) {
         return new SaveUserDto(user.getId(),user.getFullname(),user.getPassword(),user.getUsername(), user.getRole());
     }
 }

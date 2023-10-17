@@ -2,6 +2,7 @@ package com.nnk.springboot.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nnk.springboot.domain.Rating;
+import com.nnk.springboot.domain.Rating;
 import com.nnk.springboot.dto.RatingDto;
 import com.nnk.springboot.repositories.RatingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,32 +19,19 @@ public class RatingService {
     @Autowired
     RatingRepository ratingRepository;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    public RatingDto mapToRatingDTO(Rating rating) {
-        return new RatingDto(
-                rating.getId(),rating.getMoodysRating(),rating.getSandPRating(),rating.getFitchRating(),rating.getOrderNumber());
+    public Rating loadRatingById(Integer id) {
+        return ratingRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid Rating Id:" + id));
     }
 
-    public RatingDto loadRatingDtoById(Integer id) {
-        Rating rating = ratingRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid Rating Id:" + id));
-        return mapToRatingDTO(rating);
+    public List<Rating> loadRatingList() {
+        return ratingRepository.findAll();
     }
 
-    public List<RatingDto> loadRatingDtoList() {
-        List<RatingDto> ratingDtoList = new ArrayList<>();
-        List<Rating> ratings = ratingRepository.findAll();
-        ratings.forEach(rating -> ratingDtoList.add(mapToRatingDTO(rating)));
-        return ratingDtoList;
-    }
-
-    public void saveRating(RatingDto ratingDto) {
-        Rating rating = objectMapper.convertValue(ratingDto, Rating.class);
+    public void createRating(Rating rating) {
         ratingRepository.save(rating);
     }
 
-    public void updateRating(Rating ratingToUpdate, RatingDto ratingDto) {
-        ratingToUpdate = objectMapper.convertValue(ratingDto, Rating.class);
+    public void updateRating(Rating ratingToUpdate) {
         ratingRepository.save(ratingToUpdate);
     }
 

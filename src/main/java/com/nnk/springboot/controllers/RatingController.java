@@ -1,8 +1,8 @@
 package com.nnk.springboot.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nnk.springboot.domain.Rating;
 import com.nnk.springboot.dto.RatingDto;
-import com.nnk.springboot.repositories.RatingRepository;
 import com.nnk.springboot.service.RatingService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +16,12 @@ public class RatingController {
     @Autowired
     private RatingService ratingService;
 
-    @Autowired
-    private RatingRepository ratingRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @RequestMapping("/rating/list")
     public String home(Model model)
     {
-        model.addAttribute("ratings", ratingService.loadRatingDtoList());
+        model.addAttribute("ratings", RatingDto.mapFromRatings(ratingService.loadRatingList()));
         return "rating/list";
     }
 
@@ -35,8 +34,9 @@ public class RatingController {
     @PostMapping("/rating/validate")
     public String validate(@Valid @ModelAttribute("rating") RatingDto ratingDto, BindingResult result, Model model) {
         if (!result.hasErrors()) {
-            ratingService.saveRating(ratingDto);
-            model.addAttribute("ratings", ratingService.loadRatingDtoList());
+            Rating ratingToCreate = objectMapper.convertValue(ratingDto, Rating.class);
+            ratingService.createRating(ratingToCreate);
+            model.addAttribute("ratings", RatingDto.mapFromRatings(ratingService.loadRatingList()));
             return "redirect:/rating/list";
         }
         return "rating/add";
@@ -44,8 +44,7 @@ public class RatingController {
 
     @GetMapping("/rating/update/{id}")
     public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
-        RatingDto ratingDto = ratingService.loadRatingDtoById(id);
-        model.addAttribute("rating", ratingDto);
+        model.addAttribute("rating", RatingDto.mapFromRating(ratingService.loadRatingById(id)));
         return "rating/update";
     }
 
@@ -55,17 +54,17 @@ public class RatingController {
         if (result.hasErrors()) {
             return "rating/update";
         }
-        Rating ratingToUpdate = ratingRepository.findById(id).orElseThrow( () -> new IllegalArgumentException("Invalid Rating Id:" + id));
-        ratingService.updateRating(ratingToUpdate, rating);
-        model.addAttribute("ratings", ratingService.loadRatingDtoList());
+        ratingService.loadRatingById(id); //to check if the ruleName exists
+        Rating ratingToUpdate = objectMapper.convertValue(rating, Rating.class);
+        ratingService.updateRating(ratingToUpdate);
+        model.addAttribute("ratings", RatingDto.mapFromRatings(ratingService.loadRatingList()));
         return "redirect:/rating/list";
     }
 
     @GetMapping("/rating/delete/{id}")
     public String deleteRating(@PathVariable("id") Integer id, Model model) {
-        Rating ratingToDelete = ratingRepository.findById(id).orElseThrow( () -> new IllegalArgumentException("Invalid Rating Id:" + id));
-        ratingService.deleteRating(ratingToDelete);
-        model.addAttribute("ratings", ratingService.loadRatingDtoList());
+        ratingService.deleteRating(ratingService.loadRatingById(id));
+        model.addAttribute("ratings", RatingDto.mapFromRatings(ratingService.loadRatingList()));
         return "redirect:/rating/list";
     }
 }

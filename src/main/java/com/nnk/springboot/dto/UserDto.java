@@ -1,6 +1,7 @@
 package com.nnk.springboot.dto;
 
 import com.nnk.springboot.domain.User;
+import com.nnk.springboot.domain.enums.Role;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -21,7 +22,7 @@ public class UserDto {
     @NotBlank(message = "User Name is mandatory")
     private String username;
     @NotNull(message = "Role is mandatory")
-    private User.Role role;
+    private Role role;
 
     public static UserDto mapFromUser(User user) {
         return new UserDto(

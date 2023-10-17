@@ -1,6 +1,7 @@
 package com.springbootskeleton;
 
 import com.nnk.springboot.domain.Rating;
+import com.nnk.springboot.domain.RuleName;
 import com.nnk.springboot.dto.RatingDto;
 import com.nnk.springboot.repositories.RatingRepository;
 import com.nnk.springboot.service.RatingService;
@@ -11,13 +12,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,95 +29,54 @@ public class RatingTest {
     @Mock
     RatingRepository ratingRepositoryMock;
 
-    private RatingDto ratingDto;
-
-    private Rating rating;
+    private final Rating rating = new Rating();
 
     @Test
     public void saveRatingDoesNotExistShouldCallTheRatingRepositorySaveMethodTest() {
 
-        ratingDto = new RatingDto(null, "moodysRating", "sandPRating", "fitchRating", 1);
+        ratingServiceTest.createRating(rating);
 
-        ratingServiceTest.saveRating(ratingDto);
-
-        verify(ratingRepositoryMock, Mockito.times(1)).save(any(Rating.class));
+        verify(ratingRepositoryMock, Mockito.times(1)).save(rating);
     }
 
     @Test
     public void updateRatingShouldCallTheRatingRepositorySaveMethodTest() {
+        
+        ratingServiceTest.updateRating(rating);
 
-        rating = new Rating(1, "moodysRating", "sandPRating", "fitchRating", 1);
-
-        ratingDto = new RatingDto(1, "moodysRating2", "sandPRating2", "fitchRating2", 1);
-
-
-        ratingServiceTest.updateRating(rating, ratingDto);
-
-        verify(ratingRepositoryMock, Mockito.times(1)).save(any(Rating.class));
+        verify(ratingRepositoryMock, Mockito.times(1)).save(rating);
     }
 
     @Test
     public void deleteRatingShouldCallTheRatingRepositoryDeleteMethodTest() {
-
-        rating = new Rating(11, "moodysRating", "sandPRating", "fitchRating", 1);
-
+        
         ratingServiceTest.deleteRating(rating);
 
         verify(ratingRepositoryMock, Mockito.times(1)).delete(rating);
     }
 
     @Test
-    public void loadRatingDtoListShouldReturnAllTheRatingsDtoTest() {
+    public void loadRatingListShouldCallTheRatingRepositoryFindAllMethodTest() {
 
-        List<Rating> ratingList = new ArrayList<>(List.of(new Rating(1, "moodysRating", "sandPRating", "fitchRating", 1)));
-
-        when(ratingRepositoryMock.findAll()).thenReturn(ratingList);
-
-        List<RatingDto> ratingDtoList = ratingServiceTest.loadRatingDtoList();
+        ratingServiceTest.loadRatingList();
 
         verify(ratingRepositoryMock, Mockito.times(1)).findAll();
-        assertEquals(ratingList.get(0).getId(), ratingDtoList.get(0).getId());
-        assertEquals(ratingList.get(0).getMoodysRating(), ratingDtoList.get(0).getMoodysRating());
-        assertEquals(ratingList.get(0).getSandPRating(), ratingDtoList.get(0).getSandPRating());
-        assertEquals(ratingList.get(0).getFitchRating(), ratingDtoList.get(0).getFitchRating());
-        assertEquals(ratingList.get(0).getOrderNumber(), ratingDtoList.get(0).getOrderNumber());
     }
 
     @Test
-    public void loadRatingDtoByIdShouldReturnARatingDtoTest() {
+    public void loadRatingByIdShouldCallTheRatingRepositoryFindByIdMethodTest() {
 
-        Rating rating = new Rating(1, "moodysRating", "sandPRating", "fitchRating", 1);
+        when(ratingRepositoryMock.findById(anyInt())).thenReturn(Optional.of(rating));
 
-        when(ratingRepositoryMock.findById(rating.getId())).thenReturn(Optional.of(rating));
+        ratingServiceTest.loadRatingById(anyInt());
 
-        RatingDto ratingDto = ratingServiceTest.loadRatingDtoById(rating.getId());
-
-        verify(ratingRepositoryMock, Mockito.times(1)).findById(rating.getId());
-        assertEquals(rating.getId(), ratingDto.getId());
-        assertEquals(rating.getMoodysRating(), ratingDto.getMoodysRating());
-        assertEquals(rating.getSandPRating(), ratingDto.getSandPRating());
-        assertEquals(rating.getFitchRating(), ratingDto.getFitchRating());
-        assertEquals(rating.getOrderNumber(), ratingDto.getOrderNumber());
+        verify(ratingRepositoryMock, Mockito.times(1)).findById(anyInt());
     }
 
     @Test
-    public void loadRatingDtoByIdWithUnknownIdShouldThrowAnExceptionTest() {
+    public void loadRatingByIdWithUnknownIdShouldThrowAnExceptionTest() {
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> ratingServiceTest.loadRatingDtoById(2));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> ratingServiceTest.loadRatingById(2));
         assertEquals("Invalid Rating Id:" + 2, exception.getMessage());
-    }
-
-    @Test
-    public void mapToRatingDTOShouldReturnARatingDtoFromARatingEntityTest() {
-
-        rating = new Rating(1, "moodysRating", "sandPRating", "fitchRating", 1);
-
-        RatingDto ratingDto = ratingServiceTest.mapToRatingDTO(rating);
-
-        assertEquals(rating.getId(), ratingDto.getId());
-        assertEquals(rating.getMoodysRating(), ratingDto.getMoodysRating());
-        assertEquals(rating.getSandPRating(), ratingDto.getSandPRating());
-        assertEquals(rating.getFitchRating(), ratingDto.getFitchRating());
-        assertEquals(rating.getOrderNumber(), ratingDto.getOrderNumber());
     }
 }

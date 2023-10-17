@@ -1,8 +1,8 @@
 package com.nnk.springboot.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nnk.springboot.domain.BidList;
 import com.nnk.springboot.dto.BidListDto;
-import com.nnk.springboot.repositories.BidListRepository;
 import com.nnk.springboot.service.BidListService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +16,12 @@ public class BidListController {
     @Autowired
     private BidListService bidListService;
 
-    @Autowired
-    private BidListRepository bidListRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @RequestMapping("/bidList/list")
     public String home(Model model)
     {
-        model.addAttribute("bidLists", bidListService.loadBidListDtoList());
+        model.addAttribute("bidLists", BidListDto.mapFromBidLists(bidListService.loadBidListList()));
         return "bidList/list";
     }
 
@@ -35,8 +34,9 @@ public class BidListController {
     @PostMapping("/bidList/validate")
     public String validate(@Valid @ModelAttribute("bidList") BidListDto bidListDto, BindingResult result, Model model) {
         if (!result.hasErrors()) {
-            bidListService.saveBidList(bidListDto);
-            model.addAttribute("bidLists", bidListService.loadBidListDtoList());
+            BidList bidList = objectMapper.convertValue(bidListDto, BidList.class);
+            bidListService.createBidList(bidList);
+            model.addAttribute("bidLists", BidListDto.mapFromBidLists(bidListService.loadBidListList()));
             return "redirect:/bidList/list";
         }
         return "bidList/add";
@@ -44,8 +44,7 @@ public class BidListController {
 
     @GetMapping("/bidList/update/{id}")
     public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
-        BidListDto bidListDto = bidListService.loadBidListDtoById(id);
-        model.addAttribute("bidList", bidListDto);
+        model.addAttribute("bidList", BidListDto.mapFromBidList(bidListService.loadBidListById(id)));
         return "bidList/update";
     }
 
@@ -54,17 +53,17 @@ public class BidListController {
         if (result.hasErrors()) {
             return "bidList/update";
         }
-        BidList bidListToUpdate = bidListRepository.findById(id).orElseThrow( () -> new IllegalArgumentException("Invalid Curve Point Id:" + id));
-        bidListService.updateBidList(bidListToUpdate, bidList);
-        model.addAttribute("bidLists", bidListService.loadBidListDtoList());
+        bidListService.loadBidListById(id); //to check if the bidList exists
+        BidList bidListToUpdate = objectMapper.convertValue(bidList, BidList.class);
+        bidListService.updateBidList(bidListToUpdate);
+        model.addAttribute("bidLists", BidListDto.mapFromBidLists(bidListService.loadBidListList()));
         return "redirect:/bidList/list";
     }
 
     @GetMapping("/bidList/delete/{id}")
     public String deleteBidList(@PathVariable("id") Integer id, Model model) {
-        BidList bidListToDelete = bidListRepository.findById(id).orElseThrow( () -> new IllegalArgumentException("Invalid Curve Point Id:" + id));
-        bidListService.deleteBidList(bidListToDelete);
-        model.addAttribute("bidLists", bidListService.loadBidListDtoList());
+        bidListService.deleteBidList(bidListService.loadBidListById(id));
+        model.addAttribute("bidLists", BidListDto.mapFromBidLists(bidListService.loadBidListList()));
         return "redirect:/bidList/list";
     }
 }

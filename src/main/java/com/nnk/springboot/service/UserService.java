@@ -1,14 +1,11 @@
 package com.nnk.springboot.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nnk.springboot.domain.User;
-import com.nnk.springboot.dto.CreateUserDto;
-import com.nnk.springboot.dto.UserDto;
 import com.nnk.springboot.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,36 +14,24 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public UserDto mapToUserDTO(User user) {
-        return new UserDto(
-                user.getId(),user.getFullname(),user.getUsername(),user.getRole());
+    public User loadUserById(Integer id) {
+        return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid User Id:" + id));
     }
 
-    public CreateUserDto mapToCreateUserDTO(User user) {
-        return new CreateUserDto(user.getId(),user.getFullname(),user.getPassword(),user.getUsername(), user.getRole());
+    public List<User> loadUserList() {
+        return userRepository.findAll();
     }
 
-    public CreateUserDto loadUserDtoById(Integer id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid User Id:" + id));
-        return mapToCreateUserDTO(user);
-    }
+    public void createUser(User user) {
 
-    public List<UserDto> loadUserDtoList() {
-        List<UserDto> userDtoList = new ArrayList<>();
-        List<User> users = userRepository.findAll();
-        users.forEach(user -> userDtoList.add(mapToUserDTO(user)));
-        return userDtoList;
-    }
-
-    public void saveUser(CreateUserDto createUserDto) {
-        User user = objectMapper.convertValue(createUserDto, User.class);
+        user.setPassword(encoder.encode(user.getPassword()));
         userRepository.save(user);
     }
 
-    public void updateUser(User userToUpdate, CreateUserDto userDto) {
-        userToUpdate = objectMapper.convertValue(userDto, User.class);
+    public void updateUser(User userToUpdate) {
+        userToUpdate.setPassword(encoder.encode(userToUpdate.getPassword()));
         userRepository.save(userToUpdate);
     }
 

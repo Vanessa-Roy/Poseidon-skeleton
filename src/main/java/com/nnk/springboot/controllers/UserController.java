@@ -1,9 +1,8 @@
 package com.nnk.springboot.controllers;
 
-import com.nnk.springboot.domain.RuleName;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nnk.springboot.domain.User;
-import com.nnk.springboot.dto.CreateUserDto;
-import com.nnk.springboot.dto.RuleNameDto;
+import com.nnk.springboot.dto.SaveUserDto;
 import com.nnk.springboot.dto.UserDto;
 import com.nnk.springboot.repositories.UserRepository;
 import com.nnk.springboot.service.UserService;
@@ -23,26 +22,27 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     @RequestMapping("/user/list")
     public String home(Model model)
     {
-        model.addAttribute("users", userService.loadUserDtoList());
+        model.addAttribute("users", UserDto.mapFromUsers(userService.loadUserList()));
         return "user/list";
     }
 
     @GetMapping("/user/add")
     public String addUser(Model model) {
-        model.addAttribute("user", new CreateUserDto());
+        model.addAttribute("user", new SaveUserDto());
         return "user/add";
     }
 
     @PostMapping("/user/validate")
-    public String validate(@Valid @ModelAttribute("user") CreateUserDto userDto, BindingResult result, Model model) {
+    public String validate(@Valid @ModelAttribute("user") SaveUserDto userDto, BindingResult result, Model model) {
         if (!result.hasErrors()) {
-            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-            userDto.setPassword(encoder.encode(userDto.getPassword()));
-            userService.saveUser(userDto);
-            model.addAttribute("users", userService.loadUserDtoList());
+            User userToCreate = objectMapper.convertValue(userDto, User.class);
+            userService.createUser(userToCreate);
+            model.addAttribute("users", UserDto.mapFromUsers(userService.loadUserList()));
             return "redirect:/user/list";
         }
         return "user/add";
@@ -50,23 +50,20 @@ public class UserController {
 
     @GetMapping("/user/update/{id}")
     public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
-        CreateUserDto userDto = userService.loadUserDtoById(id);
-        model.addAttribute("user", userDto);
+        model.addAttribute("user", SaveUserDto.mapToSaveUserDTO(userService.loadUserById(id)));
         return "user/update";
     }
 
     @PostMapping("/user/update/{id}")
-    public String updateUser(@PathVariable("id") Integer id, @Valid @ModelAttribute("user") CreateUserDto userDto,
+    public String updateUser(@PathVariable("id") Integer id, @Valid @ModelAttribute("user") SaveUserDto userDto,
                              BindingResult result, Model model) {
         if (result.hasErrors()) {
             return "user/update";
         }
-        User userToUpdate = userRepository.findById(id).orElseThrow( () -> new IllegalArgumentException("Invalid User Id:" + id));
-
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        userDto.setPassword(encoder.encode(userDto.getPassword()));
-        userService.updateUser(userToUpdate, userDto);
-        model.addAttribute("users", userService.loadUserDtoList());
+        userService.loadUserById(id); //to check if the user exists
+        User userToUpdate = objectMapper.convertValue(userDto, User.class);
+        userService.updateUser(userToUpdate);
+        model.addAttribute("users", UserDto.mapFromUsers(userService.loadUserList()));
         return "redirect:/user/list";
     }
 
@@ -74,7 +71,7 @@ public class UserController {
     public String deleteUser(@PathVariable("id") Integer id, Model model) {
         User userToDelete = userRepository.findById(id).orElseThrow( () -> new IllegalArgumentException("Invalid User Id:" + id));
         userService.deleteUser(userToDelete);
-        model.addAttribute("users", userService.loadUserDtoList());
+        model.addAttribute("users", UserDto.mapFromUsers(userService.loadUserList()));
         return "redirect:/user/list";
     }
 }

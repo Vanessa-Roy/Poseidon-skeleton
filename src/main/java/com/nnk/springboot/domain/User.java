@@ -2,6 +2,7 @@ package com.nnk.springboot.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +26,10 @@ public class User {
     private String password;
     @NotBlank
     private String username;
-    @NotBlank
-    private String role;
+    @NotNull
+    private Role role;
+
+    public enum Role {
+        ADMIN, USER
+    }
 }

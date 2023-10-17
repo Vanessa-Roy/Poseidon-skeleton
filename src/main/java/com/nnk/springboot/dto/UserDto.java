@@ -1,11 +1,14 @@
 package com.nnk.springboot.dto;
 
+import com.nnk.springboot.domain.User;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Setter
 @Getter
@@ -17,6 +20,15 @@ public class UserDto {
     private String fullname;
     @NotBlank(message = "User Name is mandatory")
     private String username;
-    @NotBlank(message = "Role is mandatory")
-    private String role;
+    @NotNull(message = "Role is mandatory")
+    private User.Role role;
+
+    public static UserDto mapFromUser(User user) {
+        return new UserDto(
+                user.getId(),user.getFullname(),user.getUsername(),user.getRole());
+    }
+
+    public static List<UserDto> mapFromUsers(List<User> users) {
+        return users.stream().map(UserDto::mapFromUser).toList();
+    }
 }

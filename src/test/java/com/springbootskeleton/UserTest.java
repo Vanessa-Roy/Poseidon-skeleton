@@ -1,9 +1,6 @@
 package com.springbootskeleton;
 
-import com.nnk.springboot.domain.RuleName;
 import com.nnk.springboot.domain.User;
-import com.nnk.springboot.dto.CreateUserDto;
-import com.nnk.springboot.dto.RuleNameDto;
 import com.nnk.springboot.dto.UserDto;
 import com.nnk.springboot.repositories.UserRepository;
 import com.nnk.springboot.service.UserService;
@@ -13,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
@@ -21,7 +19,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,48 +33,36 @@ public class UserTest {
     UserRepository userRepositoryMock;
 
     @Mock
-    private static PasswordEncoder passwordEncoder;
-
-    private CreateUserDto createUserDto = new CreateUserDto();
-
-    private UserDto userDto = new UserDto();
-    private User user = new User();
+    BCryptPasswordEncoder encoderMock;
 
     @Test
     public void saveUserDoesNotExistShouldCallTheUserRepositorySaveMethodTest() {
 
-        userServiceTest.saveUser(createUserDto);
+        User user = new User(1,"fullnameTest","Password0!","usernameTest", User.Role.USER);
+        when(encoderMock.encode(user.getPassword())).thenReturn(user.getPassword());
 
-        verify(userRepositoryMock, Mockito.times(1)).save(any(User.class));
+        userServiceTest.createUser(user);
+
+        verify(encoderMock, Mockito.times(1)).encode(user.getPassword());
+        verify(userRepositoryMock, Mockito.times(1)).save(user);
     }
 
     @Test
     public void updateUserShouldCallTheUserRepositorySaveMethodTest() {
 
-        user = new User(
-                1,
-                "fullname",
-                "passwordTest0!",
-                "username",
-                "role"
-        );
+        User user = new User(1,"fullnameTest","Password0!","usernameTest", User.Role.USER);
+        when(encoderMock.encode(user.getPassword())).thenReturn(user.getPassword());
 
-        createUserDto = new CreateUserDto(
-                1,
-                "fullname2",
-                "passwordTest0!2",
-                "username2",
-                "role"
-        );
+        userServiceTest.updateUser(user);
 
-
-        userServiceTest.updateUser(user, createUserDto);
-
+        verify(encoderMock, Mockito.times(1)).encode(anyString());
         verify(userRepositoryMock, Mockito.times(1)).save(any(User.class));
     }
 
     @Test
     public void deleteUserShouldCallTheUserRepositoryDeleteMethodTest() {
+
+        User user = new User(1,"fullnameTest","Password0!","usernameTest", User.Role.USER);
 
         userServiceTest.deleteUser(user);
 
@@ -84,57 +70,27 @@ public class UserTest {
     }
 
     @Test
-    public void loadUserDtoListShouldReturnAllTheUsersDtoTest() {
+    public void loadUserListShouldCallTheUserRepositoryFindAllMethodTest() {
 
-        List<User> userList = new ArrayList<>(List.of(
-                new User(1, "fullname", "passwordTest0!", "username", "role")
-        ));
-
-        when(userRepositoryMock.findAll()).thenReturn(userList);
-
-        List<UserDto> userDtoList = userServiceTest.loadUserDtoList();
+        userServiceTest.loadUserList();
 
         verify(userRepositoryMock, Mockito.times(1)).findAll();
-        assertEquals(userList.get(0).getId(), userDtoList.get(0).getId());
-        assertEquals(userList.get(0).getFullname(), userDtoList.get(0).getFullname());
-        assertEquals(userList.get(0).getUsername(), userDtoList.get(0).getUsername());
-        assertEquals(userList.get(0).getRole(), userDtoList.get(0).getRole());
     }
 
     @Test
-    public void loadUserDtoByIdShouldReturnAnUserDtoTest() {
+    public void loadUserByIdShouldCallTheUserRepositoryFindByIdMethodTest() {
 
-        User user = new User(1, "fullname", "passwordTest0!", "username", "role");
+        when(userRepositoryMock.findById(anyInt())).thenReturn(Optional.of(new User()));
 
-        when(userRepositoryMock.findById(user.getId())).thenReturn(Optional.of(user));
+        userServiceTest.loadUserById(anyInt());
 
-        CreateUserDto userDto = userServiceTest.loadUserDtoById(user.getId());
-
-        verify(userRepositoryMock, Mockito.times(1)).findById(user.getId());
-        assertEquals(user.getId(), userDto.getId());
-        assertEquals(user.getFullname(), userDto.getFullname());
-        assertEquals(user.getPassword(), userDto.getPassword());
-        assertEquals(user.getUsername(), userDto.getUsername());
-        assertEquals(user.getRole(), userDto.getRole());
+        verify(userRepositoryMock, Mockito.times(1)).findById(anyInt());
     }
 
     @Test
-    public void loadUserDtoByIdWithUnknownIdShouldThrowAnExceptionTest() {
+    public void loadUserByIdWithUnknownIdShouldThrowAnExceptionTest() {
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> userServiceTest.loadUserDtoById(2));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> userServiceTest.loadUserById(2));
         assertEquals("Invalid User Id:" + 2, exception.getMessage());
-    }
-
-    @Test
-    public void mapToUserDTOShouldReturnAUserDtoFromAUserEntityTest() {
-
-        User user = new User(1, "fullname", "passwordTest0!", "username", "role");
-
-        UserDto userDto = userServiceTest.mapToUserDTO(user);
-
-        assertEquals(user.getId(), userDto.getId());
-        assertEquals(user.getFullname(), userDto.getFullname());
-        assertEquals(user.getUsername(), userDto.getUsername());
-        assertEquals(user.getRole(), userDto.getRole());
     }
 }

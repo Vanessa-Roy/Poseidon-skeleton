@@ -2,9 +2,7 @@ package com.nnk.springboot.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nnk.springboot.domain.RuleName;
-import com.nnk.springboot.domain.Trade;
 import com.nnk.springboot.dto.RuleNameDto;
-import com.nnk.springboot.dto.TradeDto;
 import com.nnk.springboot.service.RuleNameService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

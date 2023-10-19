@@ -1,6 +1,5 @@
 package com.nnk.springboot.dto;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nnk.springboot.domain.CurvePoint;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -22,8 +21,6 @@ public class CurvePointDto {
     private Double term;
     @NotNull (message = "Value is mandatory")
     private Double value;
-
-    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static CurvePointDto mapFromCurvePoint(CurvePoint curvePoint) {
         return new CurvePointDto(curvePoint.getId(),curvePoint.getCurveId(),curvePoint.getTerm(),curvePoint.getValue());

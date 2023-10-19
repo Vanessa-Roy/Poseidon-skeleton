@@ -1,7 +1,6 @@
 package com.nnk.springboot.dto;
 
 import com.nnk.springboot.domain.Trade;
-import com.nnk.springboot.domain.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

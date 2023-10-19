@@ -3,7 +3,7 @@ package com.nnk.springboot.service;
 import com.nnk.springboot.domain.User;
 import com.nnk.springboot.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,7 +14,8 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
-    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    @Autowired
+    private PasswordEncoder encoder;
 
     public User loadUserById(Integer id) {
         return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid User Id:" + id));
@@ -22,6 +23,10 @@ public class UserService {
 
     public List<User> loadUserList() {
         return userRepository.findAll();
+    }
+
+    public User loadUserByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 
     public void createUser(User user) {

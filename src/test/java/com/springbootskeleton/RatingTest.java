@@ -1,8 +1,6 @@
 package com.springbootskeleton;
 
 import com.nnk.springboot.domain.Rating;
-import com.nnk.springboot.domain.RuleName;
-import com.nnk.springboot.dto.RatingDto;
 import com.nnk.springboot.repositories.RatingRepository;
 import com.nnk.springboot.service.RatingService;
 import org.junit.jupiter.api.Test;

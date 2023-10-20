@@ -59,6 +59,7 @@ public class ApplicationSecurityConfig {
                 .authorizeHttpRequests((authorize) ->
                         authorize.requestMatchers("/").permitAll()
                                 .requestMatchers("/user/add").permitAll()
+                                .requestMatchers("*.png").permitAll()
                                 .requestMatchers("/user/list").hasRole("ADMIN")
                                 .requestMatchers("*/update/**").hasRole("ADMIN")
                                 .requestMatchers("*/delete/**").hasRole("ADMIN")

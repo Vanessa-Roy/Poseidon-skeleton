@@ -1,7 +1,6 @@
 package com.nnk.springboot.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,16 +17,16 @@ public class RuleName {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Integer id;
-    @NotBlank
+    @Column(nullable = false)
     private String name;
-    @NotBlank
+    @Column(nullable = false)
     private String description;
-    @NotBlank
+    @Column(nullable = false)
     private String json;
-    @NotBlank
+    @Column(nullable = false)
     private String template;
-    @NotBlank
+    @Column(nullable = false)
     private String sqlStr;
-    @NotBlank
+    @Column(nullable = false)
     private String sqlPart;
 }

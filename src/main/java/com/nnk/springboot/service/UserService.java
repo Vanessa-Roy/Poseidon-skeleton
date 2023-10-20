@@ -30,6 +30,12 @@ public class UserService {
     }
 
     public void createUser(User user) {
+        User existingUser = loadUserByUsername(user.getUsername());
+
+        if(existingUser != null){
+            throw new IllegalArgumentException("User already existing: " + user.getUsername());
+        }
+
         user.setPassword(encoder.encode(user.getPassword()));
         userRepository.save(user);
     }

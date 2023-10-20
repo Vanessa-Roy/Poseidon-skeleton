@@ -31,7 +31,7 @@ public class UserTest {
     private final User user = new User(1,"fullnameTest","Password0!","usernameTest", Role.USER);
 
     @Test
-    public void createUserDoesNotExistShouldCallTheUserRepositorySaveMethodTest() {
+    public void createUserDoesNotExistShouldCallTheUserRepositorySaveMethodTest() throws Exception {
 
         userServiceTest.createUser(user);
 

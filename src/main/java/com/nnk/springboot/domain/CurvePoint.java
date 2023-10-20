@@ -2,7 +2,6 @@ package com.nnk.springboot.domain;
 
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,12 +21,12 @@ public class CurvePoint {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Integer id;
-    @NotNull
+    @Column(nullable = false)
     private Integer curveId;
     private Timestamp asOfDate;
-    @NotNull
+    @Column(nullable = false)
     private Double term;
-    @NotNull
+    @Column(nullable = false)
     private Double value;
     @CreationTimestamp
     @Column(updatable=false)

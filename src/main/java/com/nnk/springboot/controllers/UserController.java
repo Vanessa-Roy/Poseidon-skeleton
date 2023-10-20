@@ -36,10 +36,15 @@ public class UserController {
     @PostMapping("/user/validate")
     public String validate(@Valid @ModelAttribute("user") SaveUserDto userDto, BindingResult result, Model model) {
         if (!result.hasErrors()) {
-            User userToCreate = objectMapper.convertValue(userDto, User.class);
-            userService.createUser(userToCreate);
-            model.addAttribute("users", UserDto.mapFromUsers(userService.loadUserList()));
-            return "redirect:/user/list";
+            try {
+                User userToCreate = objectMapper.convertValue(userDto, User.class);
+                userService.createUser(userToCreate);
+                model.addAttribute("users", UserDto.mapFromUsers(userService.loadUserList()));
+                return "redirect:/user/list";
+            } catch (Exception e) {
+                model.addAttribute("errorMessage", e.getMessage());
+                return "user/add";
+            }
         }
         return "user/add";
     }

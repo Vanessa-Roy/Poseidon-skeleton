@@ -1,6 +1,7 @@
 package com.nnk.springboot.dto;
 
 import com.nnk.springboot.domain.BidList;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,7 @@ public class BidListDto {
     @NotBlank(message = "Type is mandatory")
     private String type;
     @NotNull(message = "Bid Quantity is mandatory")
+    @Min(value = 0, message = "it must be positive")
     private Double bidQuantity;
 
     public static BidListDto mapFromBidList(BidList bidList) {

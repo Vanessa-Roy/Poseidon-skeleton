@@ -1,8 +1,6 @@
 package com.nnk.springboot.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,11 +21,11 @@ public class BidList {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Integer id;
-    @NotBlank
+    @Column(nullable = false)
     private String account;
-    @NotBlank
+    @Column(nullable = false)
     private String type;
-    @NotNull
+    @Column(nullable = false)
     private Double bidQuantity;
     private Double askQuantity;
     private Double bid;

@@ -1,8 +1,6 @@
 package com.nnk.springboot.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,13 +17,13 @@ public class Rating {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Integer id;
-    @NotBlank
+    @Column(nullable = false)
     private String moodysRating;
-    @NotBlank
+    @Column(nullable = false)
     private String sandPRating;
-    @NotBlank
+    @Column(nullable = false)
     private String fitchRating;
-    @NotNull
+    @Column(nullable = false)
     private Integer orderNumber;
 
 

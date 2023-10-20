@@ -3,6 +3,7 @@ package com.nnk.springboot.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nnk.springboot.domain.Trade;
 import com.nnk.springboot.dto.TradeDto;
+import com.nnk.springboot.security.AuthenticatedUserProvider;
 import com.nnk.springboot.service.TradeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,14 @@ public class TradeController {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    @Autowired
+    AuthenticatedUserProvider authenticatedUserProvider;
+
     @RequestMapping("/trade/list")
     public String home(Model model)
     {
         model.addAttribute("trades", TradeDto.mapFromTrades(tradeService.loadTradeList()));
+        model.addAttribute("isAdmin", authenticatedUserProvider.isAdmin(authenticatedUserProvider.getAuthenticatedUser()));
         return "trade/list";
     }
 

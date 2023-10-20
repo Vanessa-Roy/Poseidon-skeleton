@@ -57,7 +57,11 @@ public class ApplicationSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(Customizer.withDefaults())
                 .authorizeHttpRequests((authorize) ->
-                        authorize.requestMatchers("/user/**").hasRole("ADMIN")
+                        authorize.requestMatchers("/").permitAll()
+                                .requestMatchers("/user/add").permitAll()
+                                .requestMatchers("/user/list").hasRole("ADMIN")
+                                .requestMatchers("*/update/**").hasRole("ADMIN")
+                                .requestMatchers("*/delete/**").hasRole("ADMIN")
                                 .anyRequest().authenticated())
                 .formLogin(
                         form -> form

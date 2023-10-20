@@ -3,6 +3,7 @@ package com.nnk.springboot.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nnk.springboot.domain.BidList;
 import com.nnk.springboot.dto.BidListDto;
+import com.nnk.springboot.security.AuthenticatedUserProvider;
 import com.nnk.springboot.service.BidListService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +17,16 @@ public class BidListController {
     @Autowired
     private BidListService bidListService;
 
+    @Autowired
+    AuthenticatedUserProvider authenticatedUserProvider;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @RequestMapping("/bidList/list")
     public String home(Model model)
     {
         model.addAttribute("bidLists", BidListDto.mapFromBidLists(bidListService.loadBidListList()));
+        model.addAttribute("isAdmin", authenticatedUserProvider.isAdmin(authenticatedUserProvider.getAuthenticatedUser()));
         return "bidList/list";
     }
 

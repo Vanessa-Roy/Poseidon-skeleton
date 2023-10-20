@@ -3,6 +3,7 @@ package com.nnk.springboot.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nnk.springboot.domain.CurvePoint;
 import com.nnk.springboot.dto.CurvePointDto;
+import com.nnk.springboot.security.AuthenticatedUserProvider;
 import com.nnk.springboot.service.CurvePointService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,14 @@ public class CurveController {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    @Autowired
+    AuthenticatedUserProvider authenticatedUserProvider;
+
     @RequestMapping("/curvePoint/list")
     public String home(Model model)
     {
         model.addAttribute("curvePoints", CurvePointDto.mapFromCurvePoints(curvePointService.loadCurvePointList()));
+        model.addAttribute("isAdmin", authenticatedUserProvider.isAdmin(authenticatedUserProvider.getAuthenticatedUser()));
         return "curvePoint/list";
     }
 

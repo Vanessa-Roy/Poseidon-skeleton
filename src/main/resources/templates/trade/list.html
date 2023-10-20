@@ -32,7 +32,7 @@
 					<th>Account</th>
 					<th>Type</th>
 					<th>Buy Quantity</th>
-					<th>Action</th>
+					<th th:if="${isAdmin}">Action</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -41,7 +41,7 @@
 					<td th:text="${trade.account}"></td>
 					<td th:text="${trade.type}"></td>
 					<td th:text="${trade.buyQuantity}"></td>
-					<td style="width: 15%" class="text-center">
+					<td th:if="${isAdmin}" style="width: 15%" class="text-center">
 						<a th:href="@{/trade/update/{id}(id=${trade.id})}">Edit</a>&nbsp;|&nbsp;
 						<a th:href="@{/trade/delete/{id}(id=${trade.id})}">Delete</a>
 					</td>

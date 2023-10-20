@@ -3,6 +3,7 @@ package com.nnk.springboot.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nnk.springboot.domain.RuleName;
 import com.nnk.springboot.dto.RuleNameDto;
+import com.nnk.springboot.security.AuthenticatedUserProvider;
 import com.nnk.springboot.service.RuleNameService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,14 @@ public class RuleNameController {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    @Autowired
+    AuthenticatedUserProvider authenticatedUserProvider;
+
     @RequestMapping("/ruleName/list")
     public String home(Model model)
     {
         model.addAttribute("ruleNames", RuleNameDto.mapFromRuleNames(ruleNameService.loadRuleNameList()));
+        model.addAttribute("isAdmin", authenticatedUserProvider.isAdmin(authenticatedUserProvider.getAuthenticatedUser()));
         return "ruleName/list";
     }
 

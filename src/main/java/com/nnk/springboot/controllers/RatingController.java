@@ -3,6 +3,7 @@ package com.nnk.springboot.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nnk.springboot.domain.Rating;
 import com.nnk.springboot.dto.RatingDto;
+import com.nnk.springboot.security.AuthenticatedUserProvider;
 import com.nnk.springboot.service.RatingService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,14 @@ public class RatingController {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    @Autowired
+    AuthenticatedUserProvider authenticatedUserProvider;
+
     @RequestMapping("/rating/list")
     public String home(Model model)
     {
         model.addAttribute("ratings", RatingDto.mapFromRatings(ratingService.loadRatingList()));
+        model.addAttribute("isAdmin", authenticatedUserProvider.isAdmin(authenticatedUserProvider.getAuthenticatedUser()));
         return "rating/list";
     }
 

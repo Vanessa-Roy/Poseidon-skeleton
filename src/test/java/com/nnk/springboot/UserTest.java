@@ -1,4 +1,4 @@
-package com.springbootskeleton;
+package com.nnk.springboot;
 
 import com.nnk.springboot.domain.User;
 import com.nnk.springboot.domain.enums.Role;
@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -27,6 +28,9 @@ public class UserTest {
 
     @Mock
     UserRepository userRepositoryMock;
+    @Mock
+    PasswordEncoder encoder;
+
 
     private final User user = new User(1,"fullnameTest","Password0!","usernameTest", Role.USER);
 

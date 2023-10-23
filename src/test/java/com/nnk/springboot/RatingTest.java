@@ -1,4 +1,4 @@
-package com.springbootskeleton;
+package com.nnk.springboot;
 
 import com.nnk.springboot.domain.Rating;
 import com.nnk.springboot.repositories.RatingRepository;

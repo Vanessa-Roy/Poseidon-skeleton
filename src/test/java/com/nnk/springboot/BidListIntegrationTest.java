@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-public class BidLisIntegrationTest {
+public class BidListIntegrationTest {
 
     @Autowired
     private BidListService bidListServiceTest;

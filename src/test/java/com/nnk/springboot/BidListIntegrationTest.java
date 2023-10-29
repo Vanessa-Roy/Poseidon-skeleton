@@ -113,7 +113,7 @@ public class BidListIntegrationTest {
                 .perform(post("/bidList/update/{id}", existingBidListId)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .param("id", String.valueOf(existingBidListId))
-                        .param("account","account test")
+                        .param("account","account test update")
                         .param("type","type test")
                         .param("bidQuantity","10d")
                         .with(csrf()))

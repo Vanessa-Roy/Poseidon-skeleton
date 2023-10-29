@@ -115,7 +115,7 @@ public class CurvePointIntegrationTest {
                         .param("id", String.valueOf(existingCurvePointId))
                         .param("curveId","2")
                         .param("value","1d")
-                        .param("term","1d")
+                        .param("term","2d")
                         .with(csrf()))
                 .andExpect(status().is4xxClientError());
 

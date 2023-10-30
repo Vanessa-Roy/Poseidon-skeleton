@@ -1,11 +1,11 @@
 package com.nnk.springboot;
 
-import com.nnk.springboot.domain.BidList;
+import com.nnk.springboot.domain.Trade;
 import com.nnk.springboot.domain.User;
 import com.nnk.springboot.domain.enums.Role;
-import com.nnk.springboot.repositories.BidListRepository;
+import com.nnk.springboot.repositories.TradeRepository;
 import com.nnk.springboot.repositories.UserRepository;
-import com.nnk.springboot.service.BidListService;
+import com.nnk.springboot.service.TradeService;
 import com.nnk.springboot.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,198 +27,198 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-public class BidListIntegrationTest {
+public class TradeIntegrationTest {
 
     @Autowired
-    private BidListService bidListServiceTest;
+    private TradeService tradeServiceTest;
     @Autowired
     private UserService userService;
     @Autowired
-    private BidListRepository bidListRepository;
+    private TradeRepository tradeRepository;
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private MockMvc mockMvc;
 
-    private int existingBidListId;
+    private int existingTradeId;
 
     @BeforeEach
     public void setUpPertest() {
-        bidListRepository.deleteAll();
+        tradeRepository.deleteAll();
         userRepository.deleteAll();
         User existingUser = new User(null,"fullname Test","passwordTest!0","userTest", Role.USER);
         userService.createUser(existingUser);
         User existingAdmin = new User(null,"fullname Test","passwordTest!0","adminTest", Role.ADMIN);
         userService.createUser(existingAdmin);
-        BidList existingBidList = new BidList();
-        existingBidList.setAccount("account test");
-        existingBidList.setType("type test");
-        existingBidList.setBidQuantity(10d);
-        bidListServiceTest.createBidList(existingBidList);
-        existingBidListId = bidListServiceTest.loadBidListList().get(0).getId();
+        Trade existingTrade = new Trade();
+        existingTrade.setAccount("account test");
+        existingTrade.setType("type test");
+        existingTrade.setBuyQuantity(10d);
+        tradeServiceTest.createTrade(existingTrade);
+        existingTradeId = tradeServiceTest.loadTradeList().get(0).getId();
     }
 
     @Test
     @WithMockUser(username = "userTest")
-    void createBidListAsAnUserShouldCreateANewBidListTest() throws Exception {
+    void createTradeAsAnUserShouldCreateANewTradeTest() throws Exception {
         this.mockMvc
-                .perform(post("/bidList/validate")
+                .perform(post("/trade/validate")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .param("account","account test")
                         .param("type","type test")
-                        .param("bidQuantity","10d")
+                        .param("buyQuantity","10d")
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/bidList/list"));
+                .andExpect(view().name("redirect:/trade/list"));
 
-        assertNotNull(bidListServiceTest.loadBidListList().get(1).getId());
+        assertNotNull(tradeServiceTest.loadTradeList().get(1).getId());
     }
 
     @Test
     @WithMockUser(username = "adminTest", roles={"ADMIN"})
-    void createBidListAsAnAdminShouldCreateANewBidListTest() throws Exception {
+    void createTradeAsAnAdminShouldCreateANewTradeTest() throws Exception {
         this.mockMvc
-                .perform(post("/bidList/validate")
+                .perform(post("/trade/validate")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .param("account","account test")
                         .param("type","type test")
-                        .param("bidQuantity","10d")
+                        .param("buyQuantity","10d")
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/bidList/list"));
+                .andExpect(view().name("redirect:/trade/list"));
 
-        assertNotNull(bidListServiceTest.loadBidListList().get(1).getId());
+        assertNotNull(tradeServiceTest.loadTradeList().get(1).getId());
     }
 
     @Test
     @WithMockUser(username = "userTest")
-    void createBidListAsAnUserWithWrongParametersShouldNotCreateANewBidListTest() throws Exception {
+    void createTradeAsAnUserWithWrongParametersShouldNotCreateANewTradeTest() throws Exception {
         this.mockMvc
-                .perform(post("/bidList/validate")
+                .perform(post("/trade/validate")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .param("account","account test")
                         .param("type","type test")
-                        .param("bidQuantity","wrong Bid Quantity")
+                        .param("buyQuantity","wrong Bid Quantity")
                         .with(csrf()))
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(view().name("bidList/add"));
+                .andExpect(view().name("trade/add"));
 
-        assertThrows(IndexOutOfBoundsException.class, () -> bidListServiceTest.loadBidListList().get(1));
+        assertThrows(IndexOutOfBoundsException.class, () -> tradeServiceTest.loadTradeList().get(1));
     }
 
     @Test
     @WithMockUser(username = "userTest")
-    void updateBidListAsAnUserShouldNotSaveBidListTest() throws Exception {
+    void updateTradeAsAnUserShouldNotSaveTradeTest() throws Exception {
         this.mockMvc
-                .perform(post("/bidList/update/{id}", existingBidListId)
+                .perform(post("/trade/update/{id}", existingTradeId)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("id", String.valueOf(existingBidListId))
+                        .param("id", String.valueOf(existingTradeId))
                         .param("account","account test update")
                         .param("type","type test")
-                        .param("bidQuantity","10d")
+                        .param("buyQuantity","10d")
                         .with(csrf()))
                 .andExpect(status().is4xxClientError());
 
-        assertEquals("account test", bidListServiceTest.loadBidListById(existingBidListId).getAccount());
+        assertEquals("account test", tradeServiceTest.loadTradeById(existingTradeId).getAccount());
     }
 
     @Test
     @WithMockUser(username = "adminTest", roles={"ADMIN"})
-    void updateBidListAsAnAdminShouldSaveBidListTest() throws Exception {
+    void updateTradeAsAnAdminShouldSaveTradeTest() throws Exception {
         this.mockMvc
-                .perform(post("/bidList/update/{id}", existingBidListId)
+                .perform(post("/trade/update/{id}", existingTradeId)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("id", String.valueOf(existingBidListId))
+                        .param("id", String.valueOf(existingTradeId))
                         .param("account","account test update")
                         .param("type","type test")
-                        .param("bidQuantity","10d")
+                        .param("buyQuantity","10d")
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/bidList/list"));
+                .andExpect(view().name("redirect:/trade/list"));
 
-        assertEquals("account test update", bidListServiceTest.loadBidListById(existingBidListId).getAccount());
+        assertEquals("account test update", tradeServiceTest.loadTradeById(existingTradeId).getAccount());
     }
 
     @Test
     @WithMockUser(username = "adminTest", roles={"ADMIN"})
-    void updateBidListAsAnAdminWithWrongParametersShouldNotSaveBidListTest() throws Exception {
+    void updateTradeAsAnAdminWithWrongParametersShouldNotSaveTradeTest() throws Exception {
         this.mockMvc
-                .perform(post("/bidList/update/{id}", existingBidListId)
+                .perform(post("/trade/update/{id}", existingTradeId)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("id", String.valueOf(existingBidListId))
+                        .param("id", String.valueOf(existingTradeId))
                         .param("account","account test update")
                         .param("type","type test")
-                        .param("bidQuantity","wrong Bid Quantity")
+                        .param("buyQuantity","wrong Bid Quantity")
                         .with(csrf()))
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(view().name("bidList/update"));
+                .andExpect(view().name("trade/update"));
 
-        assertEquals(10d, bidListServiceTest.loadBidListById(existingBidListId).getBidQuantity());
+        assertEquals(10d, tradeServiceTest.loadTradeById(existingTradeId).getBuyQuantity());
     }
 
     @Test
     @WithMockUser(username = "userTest")
-    void deleteBidListAsAnUserShouldNotRemoveBidListTest() throws Exception {
+    void deleteTradeAsAnUserShouldNotRemoveTradeTest() throws Exception {
         this.mockMvc
-                .perform(post("/bidList/delete/{id}", existingBidListId)
+                .perform(post("/trade/delete/{id}", existingTradeId)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("id", String.valueOf(existingBidListId))
+                        .param("id", String.valueOf(existingTradeId))
                         .with(csrf()))
                 .andExpect(status().is4xxClientError());
 
-        assertNotNull(bidListServiceTest.loadBidListById(existingBidListId));
+        assertNotNull(tradeServiceTest.loadTradeById(existingTradeId));
     }
 
     @Test
     @WithMockUser(username = "adminTest", roles={"ADMIN"})
-    void deleteBidListAsAnAdminShouldRemoveBidListTest() throws Exception {
+    void deleteTradeAsAnAdminShouldRemoveTradeTest() throws Exception {
         this.mockMvc
-                .perform(get("/bidList/delete/{id}", existingBidListId)
+                .perform(get("/trade/delete/{id}", existingTradeId)
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/bidList/list"));
+                .andExpect(view().name("redirect:/trade/list"));
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> bidListServiceTest.loadBidListById(existingBidListId));
-        assertEquals("Invalid BidList Id:" + existingBidListId, exception.getMessage());
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> tradeServiceTest.loadTradeById(existingTradeId));
+        assertEquals("Invalid Trade Id:" + existingTradeId, exception.getMessage());
     }
 
     @Test
     @WithMockUser(username = "userTest")
-    void shouldAllowAccessToBidListListForAuthenticatedUserTest() throws Exception {
+    void shouldAllowAccessToTradeListForAuthenticatedUserTest() throws Exception {
         this.mockMvc
-                .perform(get("/bidList/list"))
+                .perform(get("/trade/list"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("bidList/list"))
-                .andExpect(model().attributeExists("bidLists"))
+                .andExpect(view().name("trade/list"))
+                .andExpect(model().attributeExists("trades"))
                 .andExpect(model().attributeExists("isAdmin"));
     }
 
     @Test
     @WithMockUser(username = "userTest")
-    void shouldAllowAccessToBidListAddForAuthenticatedUserTest() throws Exception {
+    void shouldAllowAccessToTradeAddForAuthenticatedUserTest() throws Exception {
         this.mockMvc
-                .perform(get("/bidList/add"))
+                .perform(get("/trade/add"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("bidList/add"))
-                .andExpect(model().attributeExists("bidList"));
+                .andExpect(view().name("trade/add"))
+                .andExpect(model().attributeExists("trade"));
     }
 
     @Test
     @WithMockUser(username = "userTest", roles={"ADMIN"})
-    void shouldAllowAccessToBidListUpdateForAdminUserTest() throws Exception {
+    void shouldAllowAccessToTradeUpdateForAdminUserTest() throws Exception {
         this.mockMvc
-                .perform(get("/bidList/update/{id}", existingBidListId))
+                .perform(get("/trade/update/{id}", existingTradeId))
                 .andExpect(status().isOk())
-                .andExpect(view().name("bidList/update"))
-                .andExpect(model().attributeExists("bidList"));
+                .andExpect(view().name("trade/update"))
+                .andExpect(model().attributeExists("trade"));
     }
 
     @Test
     @WithMockUser(username = "userTest")
-    void shouldDenyAccessToBidListUpdateForNotAdminUserTest() throws Exception {
+    void shouldDenyAccessToTradeUpdateForNotAdminUserTest() throws Exception {
         this.mockMvc
-                .perform(get("/bidList/update/{id}", existingBidListId))
+                .perform(get("/trade/update/{id}", existingTradeId))
                 .andExpect(status().is4xxClientError());
     }
 

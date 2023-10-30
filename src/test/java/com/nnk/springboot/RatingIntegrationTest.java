@@ -107,7 +107,7 @@ public class RatingIntegrationTest {
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(view().name("rating/add"));
 
-        Exception exception = assertThrows(IndexOutOfBoundsException.class, () -> ratingServiceTest.loadRatingList().get(1));
+        assertThrows(IndexOutOfBoundsException.class, () -> ratingServiceTest.loadRatingList().get(1));
     }
 
     @Test

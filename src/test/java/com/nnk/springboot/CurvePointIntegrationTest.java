@@ -103,7 +103,7 @@ public class CurvePointIntegrationTest {
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(view().name("curvePoint/add"));
 
-        Exception exception = assertThrows(IndexOutOfBoundsException.class, () -> curvePointServiceTest.loadCurvePointList().get(1));
+        assertThrows(IndexOutOfBoundsException.class, () -> curvePointServiceTest.loadCurvePointList().get(1));
     }
 
     @Test

@@ -44,6 +44,7 @@ public class UserTest {
 
     @Test
     public void updateUserShouldCallTheUserRepositorySaveMethodTest() {
+        when(userRepositoryMock.findById(anyInt())).thenReturn(Optional.of(user));
 
         userServiceTest.updateUser(user);
 

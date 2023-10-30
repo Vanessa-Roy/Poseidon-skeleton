@@ -1,7 +1,6 @@
 package com.nnk.springboot.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,7 +13,6 @@ import java.sql.Timestamp;
 @Table(name = "bidlist")
 @Setter
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
 public class BidList {
 

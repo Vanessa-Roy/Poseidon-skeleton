@@ -12,7 +12,11 @@
 	<div class="row">
 		<h2>Update User</h2>
 	</div>
-
+	<div th:if="${errorMessage}">
+		<div class="alert alert-danger">
+			<span th:text="${errorMessage}"></span>
+		</div>
+	</div>
 	<div class="row">
 		<form action="#" th:action="@{/user/update/{id}(id=${user.id})}" th:object="${user}" method="post" class="form-horizontal" style="width: 100%">
 			<div class="form-group">

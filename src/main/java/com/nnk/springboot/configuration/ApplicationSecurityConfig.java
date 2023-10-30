@@ -58,9 +58,8 @@ public class ApplicationSecurityConfig {
         http.csrf(Customizer.withDefaults())
                 .authorizeHttpRequests((authorize) ->
                         authorize.requestMatchers("/").permitAll()
-                                .requestMatchers("/user/add").permitAll()
                                 .requestMatchers("*.png").permitAll()
-                                .requestMatchers("/user/list").hasRole("ADMIN")
+                                .requestMatchers("/user/**").hasRole("ADMIN")
                                 .requestMatchers("*/update/**").hasRole("ADMIN")
                                 .requestMatchers("*/delete/**").hasRole("ADMIN")
                                 .anyRequest().authenticated())

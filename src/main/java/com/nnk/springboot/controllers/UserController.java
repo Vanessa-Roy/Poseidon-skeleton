@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nnk.springboot.domain.User;
 import com.nnk.springboot.dto.SaveUserDto;
 import com.nnk.springboot.dto.UserDto;
+import com.nnk.springboot.security.AuthenticatedUserProvider;
 import com.nnk.springboot.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private AuthenticatedUserProvider authenticatedUserProvider;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -39,7 +43,6 @@ public class UserController {
             try {
                 User userToCreate = objectMapper.convertValue(userDto, User.class);
                 userService.createUser(userToCreate);
-                model.addAttribute("users", UserDto.mapFromUsers(userService.loadUserList()));
                 return "redirect:/user/list";
             } catch (Exception e) {
                 model.addAttribute("errorMessage", e.getMessage());
@@ -61,11 +64,17 @@ public class UserController {
         if (result.hasErrors()) {
             return "user/update";
         }
-        userService.loadUserById(id); //to check if the user exists
-        User userToUpdate = objectMapper.convertValue(userDto, User.class);
-        userService.updateUser(userToUpdate);
-        model.addAttribute("users", UserDto.mapFromUsers(userService.loadUserList()));
-        return "redirect:/user/list";
+        try {
+            userService.loadUserById(id); //to check if the user exists
+            User userToUpdate = objectMapper.convertValue(userDto, User.class);
+            userService.updateUser(userToUpdate);
+            model.addAttribute("users", UserDto.mapFromUsers(userService.loadUserList()));
+            return "redirect:/user/list";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "user/update";
+        }
+
     }
 
     @GetMapping("/user/delete/{id}")

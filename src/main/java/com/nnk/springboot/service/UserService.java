@@ -41,6 +41,13 @@ public class UserService {
     }
 
     public void updateUser(User userToUpdate) {
+        if (!loadUserById(userToUpdate.getId()).getUsername().equals(userToUpdate.getUsername())) {
+            User existingUser = loadUserByUsername(userToUpdate.getUsername());
+
+            if(existingUser != null){
+                throw new IllegalArgumentException("User already existing: " + userToUpdate.getUsername());
+            }
+        }
         userToUpdate.setPassword(encoder.encode(userToUpdate.getPassword()));
         userRepository.save(userToUpdate);
     }

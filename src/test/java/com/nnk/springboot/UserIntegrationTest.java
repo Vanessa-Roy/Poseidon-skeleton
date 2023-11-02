@@ -35,7 +35,6 @@ public class UserIntegrationTest {
     private MockMvc mockMvc;
 
     private int existingUserId;
-    private int existingAdminUserId;
 
     @BeforeEach
     public void setUpPertest() {
@@ -45,7 +44,6 @@ public class UserIntegrationTest {
         User existingAdmin = new User(null,"fullname test","passwordTest!0","adminTest", Role.ADMIN);
         userServiceTest.createUser(existingAdmin);
         existingUserId = userServiceTest.loadUserByUsername("userTest").getId();
-        existingAdminUserId = userServiceTest.loadUserByUsername("adminTest").getId();
     }
 
     @Test
@@ -369,7 +367,7 @@ public class UserIntegrationTest {
         this.mockMvc
                 .perform(requestBuilder)
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/bidList/list"));
+                .andExpect(redirectedUrl("/home"));
     }
 
 }

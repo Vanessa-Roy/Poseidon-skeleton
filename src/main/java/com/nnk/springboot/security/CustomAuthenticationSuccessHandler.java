@@ -55,7 +55,7 @@ public class CustomAuthenticationSuccessHandler
 
         Map<String, String> roleTargetUrlMap = new HashMap<>();
         roleTargetUrlMap.put("ROLE_ADMIN", "/user/list");
-        roleTargetUrlMap.put("ROLE_USER", "/bidList/list");
+        roleTargetUrlMap.put("ROLE_USER", "/home");
 
         final Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         for (final GrantedAuthority grantedAuthority : authorities) {

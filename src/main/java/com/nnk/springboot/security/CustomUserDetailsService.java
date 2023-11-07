@@ -20,14 +20,14 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userService.loadUserByUsername(username);
+        User user = userService.loadUserByUsername(username); //to collect the authenticated user
 
         if (user != null) {
             return org.springframework.security.core.userdetails.User
                     .withUsername(user.getUsername())
                     .password(user.getPassword())
                     .roles(String.valueOf(user.getRole()))
-                    .build();
+                    .build(); //to create the user authenticated
         }else{
             throw new UsernameNotFoundException("Invalid username or password.");
         }

@@ -48,32 +48,33 @@ public class ApplicationSecurityConfig {
 
     /**
      * Configuration of the security filter chain.
-     *
+     * Enable the csrf protection
+     * Access regarding the role of the users
      * @param http the http
      * @return the security filter chain
      * @throws Exception the exception
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(Customizer.withDefaults())
-                .authorizeHttpRequests((authorize) ->
-                        authorize.requestMatchers("/").permitAll()
+        http.csrf(Customizer.withDefaults()) //to enable the csrf protection
+                .authorizeHttpRequests((authorize) -> //to handle the requests
+                        authorize.requestMatchers("/").permitAll() //to let access to the home page
                                 .requestMatchers("*.png").permitAll()
-                                .requestMatchers("/user/**").hasRole("ADMIN")
-                                .requestMatchers("*/update/**").hasRole("ADMIN")
-                                .requestMatchers("*/delete/**").hasRole("ADMIN")
-                                .anyRequest().authenticated())
-                .formLogin(
+                                .requestMatchers("/user/**").hasRole("ADMIN") //only admin can reach the user's pages
+                                .requestMatchers("*/update/**").hasRole("ADMIN") //only admin can reach the update pages
+                                .requestMatchers("*/delete/**").hasRole("ADMIN") //only admin can reach the delete pages
+                                .anyRequest().authenticated()) //only authenticated user can make requests
+                .formLogin( //to handle the login form
                         form -> form
                                 .loginPage("/login")
                                 .loginProcessingUrl("/login")
-                                .successHandler(customAuthenticationSuccessHandler())
-                                .permitAll())
-                .logout(
+                                .successHandler(customAuthenticationSuccessHandler()) //to redirect user according to their role
+                                .permitAll()) //to let access to the login page
+                .logout( //to handle the logout
                         logout -> logout
                                 .logoutRequestMatcher(new AntPathRequestMatcher("/app-logout"))
                                 .permitAll())
-                .userDetailsService(customUserDetailsService)
+                .userDetailsService(customUserDetailsService) //to use our own configuration to load the user authenticated
         ;
         return http.build();
     }

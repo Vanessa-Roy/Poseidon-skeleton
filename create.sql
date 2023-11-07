@@ -1,0 +1,22 @@
+create table bidlist (ask float(53), ask_quantity float(53), bid float(53), bid_quantity float(53) not null, id integer not null, bid_list_date datetime(6), creation_date datetime(6), revision_date datetime(6), account varchar(255) not null, benchmark varchar(255), book varchar(255), commentary varchar(255), creation_name varchar(255), deal_name varchar(255), deal_type varchar(255), revision_name varchar(255), security varchar(255), side varchar(255), source_list_id varchar(255), status varchar(255), trader varchar(255), type varchar(255) not null, primary key (id)) engine=InnoDB;
+create table bidlist_seq (next_val bigint) engine=InnoDB;
+insert into bidlist_seq values ( 1 );
+create table curvepoint (curve_id integer not null, id integer not null, term float(53) not null, value float(53) not null, as_of_date datetime(6), creation_date datetime(6), primary key (id)) engine=InnoDB;
+create table curvepoint_seq (next_val bigint) engine=InnoDB;
+insert into curvepoint_seq values ( 1 );
+create table rating (id integer not null, order_number integer not null, fitch_rating varchar(255) not null, moodys_rating varchar(255) not null, sandprating varchar(255) not null, primary key (id)) engine=InnoDB;
+create table rating_seq (next_val bigint) engine=InnoDB;
+insert into rating_seq values ( 1 );
+create table rulename (id integer not null, description varchar(255) not null, json varchar(255) not null, name varchar(255) not null, sql_part varchar(255) not null, sql_str varchar(255) not null, template varchar(255) not null, primary key (id)) engine=InnoDB;
+create table rulename_seq (next_val bigint) engine=InnoDB;
+insert into rulename_seq values ( 1 );
+create table trade (buy_price float(53), buy_quantity float(53) not null, id integer not null, sell_price float(53), sell_quantity float(53), creation_date datetime(6), revision_date datetime(6), trade_date datetime(6), account varchar(255) not null, benchmark varchar(255), book varchar(255), creation_name varchar(255), deal_name varchar(255), deal_type varchar(255), revision_name varchar(255), security varchar(255), side varchar(255), source_list_id varchar(255), status varchar(255), trader varchar(255), type varchar(255) not null, primary key (id)) engine=InnoDB;
+create table trade_seq (next_val bigint) engine=InnoDB;
+insert into trade_seq values ( 1 );
+create table users (id integer not null, role tinyint not null check (role between 0 and 1), fullname varchar(255) not null, password varchar(255) not null, username varchar(255) not null, primary key (id)) engine=InnoDB;
+create table users_seq (next_val bigint) engine=InnoDB;
+insert into users_seq values ( 1 );
+alter table users add constraint UK_r43af9ap4edm43mmtq01oddj6 unique (username);
+
+insert into users(id, fullname, username, password, role) values(1, "Administrator", "admin", "$2a$10$hy1.otFEqXin.qbqmCY8Ye1eRGpiS/q7.DcSCMFNgj6TQzlGF3bHm", 0);
+insert into users(id, fullname, username, password, role) values(2, "User", "user", "$2a$10$B019I242GPt1dLxIeOZG..R9tnJURMboPl1lSdQLGBiNC5aLVXEpW", 1);

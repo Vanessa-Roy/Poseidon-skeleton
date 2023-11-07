@@ -17,9 +17,15 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The type Custom authentication success handler.
+ */
 public class CustomAuthenticationSuccessHandler
         implements AuthenticationSuccessHandler {
 
+    /**
+     * The Logger.
+     */
     protected Log logger = LogFactory.getLog(this.getClass());
 
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
@@ -33,6 +39,14 @@ public class CustomAuthenticationSuccessHandler
         clearAuthenticationAttributes(request);
     }
 
+    /**
+     * Handle.
+     *
+     * @param request        the request
+     * @param response       the response
+     * @param authentication the authentication
+     * @throws IOException the io exception
+     */
     protected void handle(
             HttpServletRequest request,
             HttpServletResponse response,
@@ -51,11 +65,17 @@ public class CustomAuthenticationSuccessHandler
         redirectStrategy.sendRedirect(request, response, targetUrl);
     }
 
+    /**
+     * Determine target url string.
+     * to redirect to the right endpoint after login
+     * @param authentication the authentication
+     * @return the string
+     */
     protected String determineTargetUrl(final Authentication authentication) {
 
         Map<String, String> roleTargetUrlMap = new HashMap<>();
-        roleTargetUrlMap.put("ROLE_ADMIN", "/user/list");
-        roleTargetUrlMap.put("ROLE_USER", "/home");
+        roleTargetUrlMap.put("ROLE_ADMIN", "/user/list"); //to redirect admins after login
+        roleTargetUrlMap.put("ROLE_USER", "/home"); //to redirect users after login
 
         final Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         for (final GrantedAuthority grantedAuthority : authorities) {
@@ -68,6 +88,11 @@ public class CustomAuthenticationSuccessHandler
         throw new IllegalStateException();
     }
 
+    /**
+     * Clear authentication attributes.
+     *
+     * @param request the request
+     */
     protected void clearAuthenticationAttributes(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null) {

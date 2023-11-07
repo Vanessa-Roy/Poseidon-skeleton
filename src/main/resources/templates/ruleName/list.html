@@ -12,15 +12,18 @@
 		<div class="col-6">
 			<a href="/bidList/list">Bid List</a>&nbsp;|&nbsp;
 			<a href="/curvePoint/list">Curve Points</a>&nbsp;|&nbsp;
-			<a href="/ruleName/list">ruleNames</a>&nbsp;|&nbsp;
+			<a href="/rating/list">Ratings</a>&nbsp;|&nbsp;
 			<a href="/trade/list">Trade</a>&nbsp;|&nbsp;
 			<a href="/ruleName/list">Rule</a>
 		</div>
 		<div class="col-6 text-right">
-			Logged in user: <b th:inline="text"  class="user"> [[${#httpServletRequest.remoteUser}]] </b>
-			<form th:action="@{/app-logout}" method="POST">
-				<input type="submit" value="Logout"/>
-			</form>
+			Logged in user: <span class="font-weight-bold" sec:authentication="principal.username"></span>
+			<div class="d-flex flex-column justify-content-end">
+				<a th:if="${isAdmin}" href="/user/list">User Management</a>
+				<form th:action="@{/app-logout}" method="POST">
+					<input type="submit" value="Logout"/>
+				</form>
+			</div>
 		</div>
 	</div>
 	<div class="row"><h2>Rule List</h2></div>
@@ -36,7 +39,7 @@
 					<th>template</th>
 					<th>sql</th>
 					<th>sqlPart</th>
-					<th>Action</th>
+					<th th:if="${isAdmin}">Action</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -46,15 +49,18 @@
 					<td th:text="${ruleName.description}"></td>
 					<td th:text="${ruleName.json}"></td>
 					<td th:text="${ruleName.template}"></td>
-					<td th:text="${ruleName.sql}"></td>
+					<td th:text="${ruleName.sqlStr}"></td>
 					<td th:text="${ruleName.sqlPart}"></td>
-					<td style="width: 15%" class="text-center">
+					<td th:if="${isAdmin}" style="width: 15%" class="text-center">
 						<a th:href="@{/ruleName/update/{id}(id=${ruleName.id})}">Edit</a>&nbsp;|&nbsp;
 						<a th:href="@{/ruleName/delete/{id}(id=${ruleName.id})}">Delete</a>
 					</td>
 				</tr>
 			</tbody>
 		</table>
+	</div>
+	<div class="d-flex justify-content-end">
+		<img th:src="@{/poseidon_logo.png}" alt="PoseidonLogo" style="width:200px"/>
 	</div>
 </div>
 </body>

@@ -17,10 +17,13 @@
 			<a href="/ruleName/list">Rule</a>
 		</div>
 		<div class="col-6 text-right">
-			Logged in user: <b th:inline="text"  class="user"> [[${#httpServletRequest.remoteUser}]] </b>
-			<form th:action="@{/app-logout}" method="POST">
-				<input type="submit" value="Logout"/>
-			</form>
+			Logged in user: <span class="font-weight-bold" sec:authentication="principal.username"></span>
+			<div class="d-flex flex-column justify-content-end">
+				<a th:if="${isAdmin}" href="/user/list">User Management</a>
+				<form th:action="@{/app-logout}" method="POST">
+					<input type="submit" value="Logout"/>
+				</form>
+			</div>
 		</div>
 	</div>
 	<div class="row"><h2>Rating List</h2></div>
@@ -34,7 +37,7 @@
 					<th>SandPRating</th>
 					<th>FitchRating</th>
 					<th>Order</th>
-					<th>Action</th>
+					<th th:if="${isAdmin}">Action</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -43,14 +46,17 @@
 					<td th:text="${rating.moodysRating}"></td>
 					<td th:text="${rating.sandPRating}"></td>
 					<td th:text="${rating.fitchRating}"></td>
-					<td th:text="${rating.order}"></td>
-					<td style="width: 15%" class="text-center">
+					<td th:text="${rating.orderNumber}"></td>
+					<td th:if="${isAdmin}" style="width: 15%" class="text-center">
 						<a th:href="@{/rating/update/{id}(id=${rating.id})}">Edit</a>&nbsp;|&nbsp;
 						<a th:href="@{/rating/delete/{id}(id=${rating.id})}">Delete</a>
 					</td>
 				</tr>
 			</tbody>
 		</table>
+	</div>
+	<div class="d-flex justify-content-end">
+		<img th:src="@{/poseidon_logo.png}" alt="PoseidonLogo" style="width:200px"/>
 	</div>
 </div>
 </body>

@@ -1,53 +1,75 @@
 package com.nnk.springboot.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nnk.springboot.domain.RuleName;
+import com.nnk.springboot.dto.RuleNameDto;
+import com.nnk.springboot.security.AuthenticatedUserProvider;
+import com.nnk.springboot.service.RuleNameService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class RuleNameController {
-    // TODO: Inject RuleName service
+    @Autowired
+    private RuleNameService ruleNameService;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Autowired
+    AuthenticatedUserProvider authenticatedUserProvider;
 
     @RequestMapping("/ruleName/list")
     public String home(Model model)
     {
-        // TODO: find all RuleName, add to model
+        model.addAttribute("ruleNames", RuleNameDto.mapFromRuleNames(ruleNameService.loadRuleNameList()));
+        model.addAttribute("isAdmin", authenticatedUserProvider.isAdmin(authenticatedUserProvider.getAuthenticatedUser()));
         return "ruleName/list";
     }
 
     @GetMapping("/ruleName/add")
-    public String addRuleForm(RuleName bid) {
+    public String addRuleNameForm(Model model) {
+        model.addAttribute("ruleName", new RuleNameDto());
         return "ruleName/add";
     }
 
     @PostMapping("/ruleName/validate")
-    public String validate(@Valid RuleName ruleName, BindingResult result, Model model) {
-        // TODO: check data valid and save to db, after saving return RuleName list
+    public String validate(@Valid @ModelAttribute("ruleName") RuleNameDto ruleNameDto, BindingResult result, Model model) {
+        if (!result.hasErrors()) {
+            RuleName ruleNameToCreate = objectMapper.convertValue(ruleNameDto, RuleName.class);
+            ruleNameService.createRuleName(ruleNameToCreate);
+            model.addAttribute("ruleNames", RuleNameDto.mapFromRuleNames(ruleNameService.loadRuleNameList()));
+            return "redirect:/ruleName/list";
+        }
         return "ruleName/add";
     }
 
     @GetMapping("/ruleName/update/{id}")
     public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
-        // TODO: get RuleName by Id and to model then show to the form
+        model.addAttribute("ruleName", RuleNameDto.mapFromRuleName(ruleNameService.loadRuleNameById(id)));
         return "ruleName/update";
     }
 
     @PostMapping("/ruleName/update/{id}")
-    public String updateRuleName(@PathVariable("id") Integer id, @Valid RuleName ruleName,
-                             BindingResult result, Model model) {
-        // TODO: check required fields, if valid call service to update RuleName and return RuleName list
+    public String updateRuleName(@PathVariable("id") Integer id, @ModelAttribute("ruleName") @Valid RuleNameDto ruleName,
+                               BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            return "ruleName/update";
+        }
+        ruleNameService.loadRuleNameById(id); //to check if the ruleName exists
+        RuleName ruleNameToUpdate = objectMapper.convertValue(ruleName, RuleName.class);
+        ruleNameService.updateRuleName(ruleNameToUpdate);
+        model.addAttribute("ruleNames", RuleNameDto.mapFromRuleNames(ruleNameService.loadRuleNameList()));
         return "redirect:/ruleName/list";
     }
 
     @GetMapping("/ruleName/delete/{id}")
     public String deleteRuleName(@PathVariable("id") Integer id, Model model) {
-        // TODO: Find RuleName by Id and delete the RuleName, return to Rule list
+        ruleNameService.deleteRuleName(ruleNameService.loadRuleNameById(id));
+        model.addAttribute("ruleNames", RuleNameDto.mapFromRuleNames(ruleNameService.loadRuleNameList()));
         return "redirect:/ruleName/list";
     }
 }
